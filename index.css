@@ -51,9 +51,21 @@ html, body {
   width: 50%;
   height: 100%;
   background-color: #efefef;
+  position: relative;
 }
 .silverbullet-editor-wrapper {
   background-color: #fff;
+}
+
+.silverbullet-editor-datafield {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 200px;
+  height: 300px;
+  -moz-tab-size: 12;
+  -o-tab-size: 12;
+  tab-size: 12;
 }
 
 /* PUSH FOOTER is the empty div to force the sticky footer */
@@ -89,6 +101,7 @@ html, body {
   -webkit-transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   -moz-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
 .silverbullet-export-button p {
@@ -97,6 +110,7 @@ html, body {
   -webkit-transform: translateY(-50%);
   -ms-transform: translateY(-50%);
   -moz-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
   transform: translateY(-50%);
 }
 .silverbullet-export-button:hover {
