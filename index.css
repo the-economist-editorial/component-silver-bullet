@@ -1,0 +1,124 @@
+@import '@economist/component-silver-styles-print';
+/*
+html, body {
+  height: 100%;
+  min-width: 300px;
+  max-width: 1191px;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+*/
+
+/* During development, OUTERMOST wrapper has fixed depth */
+.silverbullet-outermost-wrapper {
+  width: 100%;
+  min-width: 600px;
+  max-width: 1191px;
+  /*max-height: 800px;*/
+  height: 800px;
+}
+
+/* MAIN OUTER  wrapper styled to do sticky footer below */
+.silverbullet-mainouter-wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -50px;
+  position: relative;
+}
+
+.silverbullet-maininner-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: aqua;
+  overflow: hidden;
+  /* Transition would be for small devices, but
+    comm'd out because those aren't envisaged.
+    See also, media query at bottom of this file */
+  /*-webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;*/
+}
+
+.silverbullet-chart-wrapper, .silverbullet-editor-wrapper {
+  float:left;
+  width: 50%;
+  height: 100%;
+  background-color: #efefef;
+}
+.silverbullet-editor-wrapper {
+  background-color: #fff;
+}
+
+/* PUSH FOOTER is the empty div to force the sticky footer */
+.silverbullet-push-footer {
+  height: 50px;
+  clear: both;
+}
+
+.silverbullet-footer-wrapper {
+  height: 50px;
+  width: 100%;
+  background-color: #ede;
+  text-align: center;
+  clear: both;
+  position: relative;
+  /*display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;*/
+}
+.silverbullet-export-button {
+  margin: 0;
+  height: 30px;
+  width: 80px;
+  position: relative;
+  background-color: #444;
+  color: white;
+  /*position: absolute;*/
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.silverbullet-export-button p {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.silverbullet-export-button:hover {
+  background-color: red;
+  color: black;
+}
+
+/* MEDIA query comm'd out, since this won't run on small devices... */
+/*
+@media screen and (max-width: 600px) {
+
+  .silverbullet-inner-wrapper {
+    width:200%;
+    left: 0;
+  }
+
+  .silverbullet-export-button {
+    margin: 0;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+  }
+}
+*/
