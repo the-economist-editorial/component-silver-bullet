@@ -30,6 +30,8 @@ export default class SilverBullet extends React.Component {
         'yOrient': 'left',
         'style': 'bars',
       },
+      // Plausible scale increments
+      plausibleincrements: [ 0.25, 0.5, 1, 2, 3, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 2000 ],
     };
   }
   // DEFAULT PROPS ends
@@ -50,33 +52,21 @@ export default class SilverBullet extends React.Component {
   }
   // COMPONENT DID MOUNT ends
 
+  // CATCH DATA CHANGE EVENT
+  // Called from render > textarea > change event
   catchDataChangeEvent(event) {
     const data = this.state.data;
     const newData = this.tsvToDataArray(event.target.value);
-    console.log(newData);
-    // const newData = this.parseNewData(event.target.value);
     data.data = newData.data;
-    // Rescale (hard-set to x-domain, so far...):
-    //         'xDomain': [ 0, 10 ],
-    // const xdomain = [ 0, newData.maxVal ];
-    // let maxVal = newData.maxVal;
-    // for (const i in newData) {
-    //   let val = newData[i].value;
-    //   // val is a string, so...
-    //   if (val.search('.') > -1) {
-    //     val = parseFloat(val);
-    //   } else {
-    //     val = parseInt(val, 10);
-    //   }
-    //   if (val > maxVal) {
-    //     maxVal = val;
-    //   }
-    // }
-    // xdomain.push(parseInt(newData.maxVal, 10));
-    data.xDomain = [ 0, newData.maxVal ];
+    const mmiObj = this.getScaleMinMaxIncr(0, newData.maxVal, 5);
+    data.xDomain = [ 0, mmiObj.max ];
     this.setState({ data });
   }
+  // CATCH DATA CHANGE EVENT ends
 
+  // CATCH DATA KEY DOWN EVENT
+  // Called from render > textarea > keydown event to
+  // pre-empt default tab-insertion and put a tab in data field
   catchDataKeydownEvent(event) {
     if (event.keyCode === 9) {
       const target = event.target;
@@ -93,6 +83,7 @@ export default class SilverBullet extends React.Component {
       event.preventDefault();
     }
   }
+  // CATCH DATA KEY DOWN EVENT ends
 
   // TSV TO DATA ARRAY
   // Converts tsv into an array of objects with 'category' and 'value' properties
@@ -156,10 +147,8 @@ export default class SilverBullet extends React.Component {
   }
   // CSV TO JSON ends
 
-  // PARSE NEW DATA
-  // As things stand, data comes in as a string that needs to
-  // be parsed into an array of objects (for structure see
-  // default props above)
+  // PARSE NEW DATA WITH D3
+  // Not called, but demos D3's tsv.parse method
   parseNewData(dataString) {
     if (dataString.search('category') !== 0) {
       const dataHeaders = 'category\tvalue\n';
@@ -221,4 +210,47 @@ export default class SilverBullet extends React.Component {
     );
   }
   // RENDER ends
+
+  // UTILITIES
+  //
+  // MIN MAX OBJECT
+// Passed 3 args: actual min val; actual max val; ideal number of increment-steps
+// Returns obj with 3 properties: min, max, increment
+getScaleMinMaxIncr(minVal, maxVal, stepNo) {
+  const mmObj = {};
+  // Array of "acceptable" increments
+  const plausibleIncrs = this.props.plausibleincrements;
+  let min = 0;
+  let max = 0;
+  // Min can't exceed zero; max can't be less than zero
+  minVal = Math.min(0, minVal);
+  maxVal = Math.max(0, maxVal);
+  // Do (max-min) / steps to get a raw increment
+  let incr = (maxVal - minVal) / stepNo;
+  // Increment is presumably imperfect, so loop through
+  // the array of values, raising the increment
+  // to the next acceptable value
+  for (let i = 0; i < plausibleIncrs.length; i ++) {
+    const plausVal = plausibleIncrs[i];
+    if (plausVal >= incr) {
+      incr = plausVal;
+      break;
+    }
+  }
+
+  // From zero, lower min to next acceptable value on or below inherited min
+  while (Math.floor(min) > Math.floor(minVal)) {
+    min -= incr;
+  }
+  // From zero, raise max to next acceptable value on or above inherited max
+  while (max < maxVal) {
+    max += incr;
+  }
+  mmObj.min = min;
+  mmObj.max = max;
+  mmObj.increment = incr;
+  return mmObj;
+}
+// MIN MAX OBJECT ends
+
 }
