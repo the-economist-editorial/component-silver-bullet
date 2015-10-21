@@ -44,7 +44,7 @@ export default class SilverBullet extends React.Component {
     super(props);
     this.state = {
       data: props.data,
-      // exportSvg: false,
+      getSvg: false,
     };
   }
   // CONSTRUCTOR ends
@@ -86,8 +86,11 @@ export default class SilverBullet extends React.Component {
 
   // CATCH EXPORT-PNG CLICK
   catchPngExportClick() {
-    const thisDomNode =  React.findDOMNode(this);
-    debugger;
+    const thisDomNode =  React.findDOMNode(this.refs.chartwrapper);
+    // Currently, this returns the contents of the SVG wrapper:
+    // thisDomNode.childNodes[0].childNodes[0].childNodes[0].innerHTML
+    this.setState({ getSvg: true });
+    // debugger;
   }
   // CATCH EXPORT-PNG CLICK ends
 
@@ -170,13 +173,13 @@ export default class SilverBullet extends React.Component {
   // Called from render
   // Extracts context string ('print', etc) from data and
   // returns the appropriate child component as JSX
-  getChartContext(data) {
+  getChartContext(data, getSvg) {
     const contextStr = data.context;
     switch (contextStr) {
       case 'print':
-        return <PrintStyles data={data}/>;
+        return <PrintStyles data={data} getSvg={getSvg}/>;
       default:
-        return <PrintStyles data={data}/>;
+        return <PrintStyles data={data} getSvg={getSvg}/>;
     }
   }
   // GET CHART CONTEXT ends
@@ -228,14 +231,15 @@ getScaleMinMaxIncr(minVal, maxVal, stepNo) {
 // and there's a sticky footer-wrapper at the bottom...
 render() {
   const data = this.state.data;
+  const getSvg = this.state.getSvg;
   // Use appropriate CSS over-rides:
-  const chartContext = this.getChartContext(data);
+  const chartContext = this.getChartContext(data, getSvg);
   const defaultTextValue = 'Paste data here\n(Row 1 must include "category" and "value" headers)';
   return (
     <div className="silverbullet-outermost-wrapper">
       <div className="silverbullet-mainouter-wrapper">
         <div className="silverbullet-maininner-wrapper">
-          <div className="silverbullet-chart-wrapper">
+          <div className="silverbullet-chart-wrapper" ref="chartwrapper">
             {chartContext}
           </div>
           <div className="silverbullet-editor-wrapper" data={data}>
