@@ -1,19 +1,21 @@
 import React from 'react';
 import Dthree from 'd3';
 import PrintStyles from '@economist/component-silver-styles-print';
-// const customData = require('./assets/data.json');
+
 export default class SilverBullet extends React.Component {
 
   // PROP TYPES
   static get propTypes() {
     return {
       data: React.PropTypes.object.isRequired,
+      plausibleincrements: React.PropTypes.array,
       test: React.PropTypes.string,
     };
   }
   // PROP TYPES ends
 
   // DEFAULT PROPS
+  // Some default dull-boring-dull data; and the list of plausible scale increments
   static get defaultProps() {
     return {
       data: {
@@ -37,20 +39,17 @@ export default class SilverBullet extends React.Component {
   // DEFAULT PROPS ends
 
   // CONSTRUCTOR
-  //    bind handleResize to this component
-  //    set default state
+  // Set default state
   constructor(props) {
     super(props);
     this.state = {
       data: props.data,
+      // exportSvg: false,
     };
   }
   // CONSTRUCTOR ends
 
-  // COMPONENT DID MOUNT
-  componentDidMount() {
-  }
-  // COMPONENT DID MOUNT ends
+  // *** EVENT CATCHERS ***
 
   // CATCH DATA CHANGE EVENT
   // Called from render > textarea > change event
@@ -84,6 +83,15 @@ export default class SilverBullet extends React.Component {
     }
   }
   // CATCH DATA KEY DOWN EVENT ends
+
+  // CATCH EXPORT-PNG CLICK
+  catchPngExportClick() {
+    const thisDomNode =  React.findDOMNode(this);
+    debugger;
+  }
+  // CATCH EXPORT-PNG CLICK ends
+
+  // *** UTILITIES ***
 
   // TSV TO DATA ARRAY
   // Converts tsv into an array of objects with 'category' and 'value' properties
@@ -173,46 +181,6 @@ export default class SilverBullet extends React.Component {
   }
   // GET CHART CONTEXT ends
 
-  // RENDER
-  // A note on structure. There's an outermost-wrapper to
-  // wrap *everything*. Then the mainouter-wrapper holds the main content;
-  // and there's a sticky footer-wrapper at the bottom...
-  render() {
-    const data = this.state.data;
-    // Use appropriate CSS over-rides:
-    const chartContext = this.getChartContext(data);
-    const defaultTextValue = 'Paste data here\n(Row 1 must include "category" and "value" headers)';
-    return (
-      <div className="silverbullet-outermost-wrapper">
-        <div className="silverbullet-mainouter-wrapper">
-          <div className="silverbullet-maininner-wrapper">
-            <div className="silverbullet-chart-wrapper">
-              {chartContext}
-            </div>
-            <div className="silverbullet-editor-wrapper" data={data}>
-              <textarea
-                className="silverbullet-editor-datafield"
-                defaultValue={defaultTextValue}
-                onChange={this.catchDataChangeEvent.bind(this)}
-                onKeyDown={this.catchDataKeydownEvent.bind(this)}
-              >
-              </textarea>
-            </div>
-          </div>
-          <div className="silverbullet-push-footer"></div>
-        </div>
-        <div className="silverbullet-footer-wrapper">
-          <div className="silverbullet-export-button">
-            <p>Export</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  // RENDER ends
-
-  // UTILITIES
-  //
   // MIN MAX OBJECT
 // Passed 3 args: actual min val; actual max val; ideal number of increment-steps
 // Returns obj with 3 properties: min, max, increment
@@ -230,7 +198,7 @@ getScaleMinMaxIncr(minVal, maxVal, stepNo) {
   // Increment is presumably imperfect, so loop through
   // the array of values, raising the increment
   // to the next acceptable value
-  for (let i = 0; i < plausibleIncrs.length; i ++) {
+  for (let i = 0; i < plausibleIncrs.length; i++) {
     const plausVal = plausibleIncrs[i];
     if (plausVal >= incr) {
       incr = plausVal;
@@ -252,5 +220,46 @@ getScaleMinMaxIncr(minVal, maxVal, stepNo) {
   return mmObj;
 }
 // MIN MAX OBJECT ends
+
+
+// RENDER
+// A note on structure. There's an outermost-wrapper to
+// wrap *everything*. Then the mainouter-wrapper holds the main content;
+// and there's a sticky footer-wrapper at the bottom...
+render() {
+  const data = this.state.data;
+  // Use appropriate CSS over-rides:
+  const chartContext = this.getChartContext(data);
+  const defaultTextValue = 'Paste data here\n(Row 1 must include "category" and "value" headers)';
+  return (
+    <div className="silverbullet-outermost-wrapper">
+      <div className="silverbullet-mainouter-wrapper">
+        <div className="silverbullet-maininner-wrapper">
+          <div className="silverbullet-chart-wrapper">
+            {chartContext}
+          </div>
+          <div className="silverbullet-editor-wrapper" data={data}>
+            <textarea
+              className="silverbullet-editor-datafield"
+              defaultValue={defaultTextValue}
+              onChange={this.catchDataChangeEvent.bind(this)}
+              onKeyDown={this.catchDataKeydownEvent.bind(this)}
+            >
+            </textarea>
+          </div>
+        </div>
+        <div className="silverbullet-push-footer"></div>
+      </div>
+      <div className="silverbullet-footer-wrapper">
+        <div className="silverbullet-export-wrapper">
+          <div className="silverbullet-export-button" id="silverbullet-export-png">
+            <p onClick={this.catchPngExportClick.bind(this)}>Export PNG</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+// RENDER ends
 
 }
