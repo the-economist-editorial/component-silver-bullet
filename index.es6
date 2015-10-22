@@ -86,13 +86,24 @@ export default class SilverBullet extends React.Component {
 
   // CATCH EXPORT-PNG CLICK
   catchPngExportClick() {
-    const thisDomNode =  React.findDOMNode(this.refs.chartwrapper);
+    // const thisDomNode =  React.findDOMNode(this.refs.chartwrapper);
     // Currently, this returns the contents of the SVG wrapper:
     // thisDomNode.childNodes[0].childNodes[0].childNodes[0].innerHTML
     this.setState({ getSvg: true });
     // debugger;
   }
   // CATCH EXPORT-PNG CLICK ends
+
+  // CATCH RETURNED SVG
+  // Callback for SVG content returned from style-specific component
+  // Currently just crows. But will eventually do something with it...
+  // And sets the svg event flag off again
+  catchReturnedSvg(svgString) {
+    console.log('Silver bullet got ' + svgString + '... setting the flag off again at the top');
+    this.setState({ getSvg: false });
+  }
+  // CATCH RETURNED SVG ends
+
 
   // *** UTILITIES ***
 
@@ -173,13 +184,15 @@ export default class SilverBullet extends React.Component {
   // Called from render
   // Extracts context string ('print', etc) from data and
   // returns the appropriate child component as JSX
+  // Passed props are the data object; the getSVG flag;
+  // and the callback to which svg content is returned
   getChartContext(data, getSvg) {
     const contextStr = data.context;
     switch (contextStr) {
       case 'print':
-        return <PrintStyles data={data} getSvg={getSvg}/>;
+        return <PrintStyles data={data} getSvg={getSvg} passSvg={this.catchReturnedSvg.bind(this)}/>;
       default:
-        return <PrintStyles data={data} getSvg={getSvg}/>;
+        return <PrintStyles data={data} getSvg={getSvg} passSvg={this.catchReturnedSvg.bind(this)}/>;
     }
   }
   // GET CHART CONTEXT ends
