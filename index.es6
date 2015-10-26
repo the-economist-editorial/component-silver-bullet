@@ -1,3 +1,4 @@
+/* global document */
 import React from 'react';
 import Dthree from 'd3';
 import PrintStyles from '@economist/component-silver-styles-print';
@@ -99,11 +100,53 @@ export default class SilverBullet extends React.Component {
   // Currently just crows. But will eventually do something with it...
   // And sets the svg event flag off again
   catchReturnedSvg(svgString) {
-    console.log('Silver bullet got ' + svgString + '... setting the flag off again at the top');
+    // So svgString is the SVG node's content
+    // We also need the styles, so:
+    const chartStyles = this.getChartStyles();
+    // ... returns complete <defs><styles>... tag structure
+    let svgExport = '<?xml version="1.0" encoding="utf-8"?>\n';
+    svgExport += '<!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n';
+    svgExport += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n';
+    svgExport += '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" ';
+    svgExport += 'xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"\n';
+    svgExport += 'viewBox="0 0 595.3 841.9" enable-background="new 0 0 595.3 841.9" xml:space="preserve">';
+    svgExport += chartStyles;
+    svgExport += svgString;
+    svgExport += '</svg>';
+    this.downloadSvg(svgExport);
     this.setState({ getSvg: false });
   }
   // CATCH RETURNED SVG ends
 
+  // DOWNLOAD SVG
+  // Called from catchReturnedSvg. Passed the svg string,
+  // it downloads it to a datastamped .svg file...
+  downloadSvg(text) {
+    const aElement = document.createElement('a');
+    const fileName = this.makeSvgFilename();
+    aElement.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`);
+    aElement.setAttribute('download', fileName);
+    document.body.appendChild(aElement);
+    if (document.createEvent) {
+      const event = document.createEvent('MouseEvents');
+      event.initEvent('click', true, true);
+      aElement.dispatchEvent(event);
+    } else {
+      aElement.click();
+    }
+    document.body.removeChild(aElement);
+  }
+  // DOWNLOAD SVG ends
+
+  // MAKE SVG FILENAME
+  // Called from downloadSvg to assemble a timestamed svg filename
+  makeSvgFilename() {
+    const myDate = new Date();
+    let timeStamp = `${myDate.getMonth()}-${myDate.getDate()}-`;
+    timeStamp += `${myDate.getHours()}-${myDate.getMinutes()}`;
+    return `svg-${timeStamp}.svg`;
+  }
+  // MAKE SVG FILENAME ends
 
   // *** UTILITIES ***
 
@@ -236,6 +279,48 @@ getScaleMinMaxIncr(minVal, maxVal, stepNo) {
   return mmObj;
 }
 // MIN MAX OBJECT ends
+
+// GET CHART STYLES
+// Harvest CSS for SVG node
+// (see: http://spin.atomicobject.com/2014/01/21/convert-svg-to-png/)
+getChartStyles() {
+  // return "CSS prepends\n";
+  let used = '';
+  const sheets = document.styleSheets;
+  for (let i = 0; i < sheets.length; i++) {
+    const rules = sheets[i].cssRules;
+    for (let ruleNo = 0; ruleNo < rules.length; ruleNo++) {
+      const rule = rules[ruleNo];
+      if (typeof (rule.style) !== 'undefined') {
+        // const elems = dom.querySelectorAll(rule.selectorText);
+        const elems = document.querySelectorAll(rule.selectorText);
+        if (elems.length > 0) {
+          const selText = rule.selectorText;
+          if (selText.search('d3') >= 0) {
+            // used += selText + ' { ' + rule.style.cssText + ' }\n';
+            used += `${selText} { ${rule.style.cssText} }\n`;
+          }
+        }
+      }
+    }
+  }
+  // Pre/append tags:
+  const pref = '<defs>\n<style type="text/css"><![CDATA[\n';
+  const suff = '\n]]></style>\n</defs>';
+  return pref + used + suff;
+  // The following would append a new style node to the document head node
+  // Left here in case it's useful
+  /*
+  const sty = document.createElement('style');
+  sty.setAttribute('type', 'text/css');
+  sty.innerHTML = '<![CDATA[\n' + used + '\n]]>';
+  document.getElementsByTagName('head')[0].appendChild(sty);
+  */
+  // I could embed this in a defs tag...
+  // const defs = document.createElement('defs');
+  // defs.appendChild(sty);
+  // Anyway: this appends the style to the document.head...
+}
 
 
 // RENDER
