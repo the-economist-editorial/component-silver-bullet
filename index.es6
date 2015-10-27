@@ -8,7 +8,7 @@ export default class SilverBullet extends React.Component {
   // PROP TYPES
   static get propTypes() {
     return {
-      data: React.PropTypes.object.isRequired,
+      config: React.PropTypes.object.isRequired,
       plausibleincrements: React.PropTypes.array,
       test: React.PropTypes.string,
     };
@@ -19,15 +19,15 @@ export default class SilverBullet extends React.Component {
   // Some default dull-boring-dull data; and the list of plausible scale increments
   static get defaultProps() {
     return {
-      data: {
+      config: {
         'context': 'print',
         'data': [
-          { 'category': 'Ten', 'value': 10 },
-          { 'category': 'Zero', 'value': 0 },
+          { 'category': 'Two', 'value': 2 },
+          { 'category': 'Four', 'value': 4 },
         ],
-        'dimensions': { 'width': 200, 'height': 200 },
-        'margins': { 'top': 30, 'right': 30, 'bottom': 30, 'left': 60 },
-        'xDomain': [ 0, 10 ],
+        'dimensions': { 'width': 160, 'height': 155 },
+        'margins': { 'top': 40, 'right': 12, 'bottom': 40, 'left': 40 },
+        'xDomain': [ 0, 5 ],
         'yDomain': [],
         'xOrient': 'bottom',
         'yOrient': 'left',
@@ -44,7 +44,7 @@ export default class SilverBullet extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: props.data,
+      config: props.config,
       getSvg: false,
     };
   }
@@ -55,12 +55,12 @@ export default class SilverBullet extends React.Component {
   // CATCH DATA CHANGE EVENT
   // Called from render > textarea > change event
   catchDataChangeEvent(event) {
-    const data = this.state.data;
+    const config = this.state.config;
     const newData = this.tsvToDataArray(event.target.value);
-    data.data = newData.data;
+    config.data = newData.data;
     const mmiObj = this.getScaleMinMaxIncr(0, newData.maxVal, 5);
-    data.xDomain = [ 0, mmiObj.max ];
-    this.setState({ data });
+    config.xDomain = [ 0, mmiObj.max ];
+    this.setState({ config });
   }
   // CATCH DATA CHANGE EVENT ends
 
@@ -229,13 +229,13 @@ export default class SilverBullet extends React.Component {
   // returns the appropriate child component as JSX
   // Passed props are the data object; the getSVG flag;
   // and the callback to which svg content is returned
-  getChartContext(data, getSvg) {
-    const contextStr = data.context;
+  getChartContext(config, getSvg) {
+    const contextStr = config.context;
     switch (contextStr) {
       case 'print':
-        return <PrintStyles data={data} getSvg={getSvg} passSvg={this.catchReturnedSvg.bind(this)}/>;
+        return <PrintStyles config={config} getSvg={getSvg} passSvg={this.catchReturnedSvg.bind(this)}/>;
       default:
-        return <PrintStyles data={data} getSvg={getSvg} passSvg={this.catchReturnedSvg.bind(this)}/>;
+        return <PrintStyles config={config} getSvg={getSvg} passSvg={this.catchReturnedSvg.bind(this)}/>;
     }
   }
   // GET CHART CONTEXT ends
@@ -328,10 +328,10 @@ getChartStyles() {
 // wrap *everything*. Then the mainouter-wrapper holds the main content;
 // and there's a sticky footer-wrapper at the bottom...
 render() {
-  const data = this.state.data;
+  const config = this.state.config;
   const getSvg = this.state.getSvg;
   // Use appropriate CSS over-rides:
-  const chartContext = this.getChartContext(data, getSvg);
+  const chartContext = this.getChartContext(config, getSvg);
   const defaultTextValue = 'Paste data here\n(Row 1 must include "category" and "value" headers)';
   return (
     <div className="silverbullet-outermost-wrapper">
@@ -340,7 +340,7 @@ render() {
           <div className="silverbullet-chart-wrapper" ref="chartwrapper">
             {chartContext}
           </div>
-          <div className="silverbullet-editor-wrapper" data={data}>
+          <div className="silverbullet-editor-wrapper" config={config}>
             <textarea
               className="silverbullet-editor-datafield"
               defaultValue={defaultTextValue}
