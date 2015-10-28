@@ -16,7 +16,8 @@ export default class SilverBullet extends React.Component {
   // PROP TYPES ends
 
   // DEFAULT PROPS
-  // Some default dull-boring-dull data; and the list of plausible scale increments
+  // Default configuration object, including some boring data.
+  // 'Value' is added to this as it progresses down the tree...
   static get defaultProps() {
     return {
       config: {
@@ -32,6 +33,12 @@ export default class SilverBullet extends React.Component {
         'xOrient': 'bottom',
         'yOrient': 'left',
         'style': 'bars',
+        'strings': {
+          'title': { 'content': 'Title to come in undue course in due course...', 'class': 'silver-d3-title-string' },
+          'subtitle': { 'content': 'Subtitle to come...', 'class': 'silver-d3-subtitle-string' },
+          'source': { 'content': 'Source: to come', 'class': 'silver-d3-source-string' },
+          'footnote': { 'content': 'Footnote to come...', 'class': 'silver-d3-footnote-string' },
+        },
       },
       // Plausible scale increments
       plausibleincrements: [ 0.25, 0.5, 1, 2, 3, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 2000 ],
@@ -355,7 +362,7 @@ render() {
       <div className="silverbullet-footer-wrapper">
         <div className="silverbullet-export-wrapper">
           <div className="silverbullet-export-button" id="silverbullet-export-png">
-            <p onClick={this.catchPngExportClick.bind(this)}>Export PNG</p>
+            <p onClick={this.catchPngExportClick.bind(this)}>Export SVG</p>
           </div>
         </div>
       </div>
