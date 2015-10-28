@@ -125,10 +125,9 @@
     "watch": "parallelshell 'npm run doc:watch' 'npm run prepublish:watch' 'npm run serve'"
   },
   "dependencies": {
-    "@economist/component-silver-styles-print": "^1.0.0",
+    "react": "^0.13.3",
     "d3": "^3.5.6",
-    "react": "^0.14.0",
-    "react-dom": "^0.14.0"
+    "@economist/component-silver-styles-print": "^1.0.0"
   },
   "devDependencies": {
     "@economist/component-devpack": "^3.4.3",
