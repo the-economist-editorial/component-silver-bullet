@@ -1,9 +1,6 @@
 import React from 'react';
 import SilverBullet from './index.es6';
-// import data from './assets/data.json';
+import config from './assets/config.json';
 export default (
-  <SilverBullet/>
-    // No external data by default:
-    // data={data}
-    // />
+  <SilverBullet config={config}/>
 );

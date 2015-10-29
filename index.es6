@@ -20,26 +20,6 @@ export default class SilverBullet extends React.Component {
   // 'Value' is added to this as it progresses down the tree...
   static get defaultProps() {
     return {
-      config: {
-        'context': 'print',
-        'data': [
-          { 'category': 'Two', 'value': 2 },
-          { 'category': 'Four', 'value': 4 },
-        ],
-        'dimensions': { 'width': 160, 'height': 155 },
-        'margins': { 'top': 40, 'right': 12, 'bottom': 40, 'left': 40 },
-        'xDomain': [ 0, 5 ],
-        'yDomain': [],
-        'xOrient': 'bottom',
-        'yOrient': 'left',
-        'style': 'bars',
-        'strings': {
-          'title': { 'content': 'Title to come in undue course in due course...', 'class': 'silver-d3-title-string' },
-          'subtitle': { 'content': 'Subtitle to come...', 'class': 'silver-d3-subtitle-string' },
-          'source': { 'content': 'Source: to come', 'class': 'silver-d3-source-string' },
-          'footnote': { 'content': 'Footnote to come...', 'class': 'silver-d3-footnote-string' },
-        },
-      },
       // Plausible scale increments
       plausibleincrements: [ 0.25, 0.5, 1, 2, 3, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 2000 ],
     };
@@ -118,8 +98,9 @@ export default class SilverBullet extends React.Component {
     svgExport += 'xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"\n';
     svgExport += 'viewBox="0 0 595.3 841.9" enable-background="new 0 0 595.3 841.9" xml:space="preserve">';
     svgExport += chartStyles;
+    svgExport += '<g transform="translate(100 100)">';
     svgExport += svgString;
-    svgExport += '</svg>';
+    svgExport += '</g></svg>';
     this.downloadSvg(svgExport);
     this.setState({ getSvg: false });
   }
