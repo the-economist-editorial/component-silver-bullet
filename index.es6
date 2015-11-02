@@ -98,6 +98,8 @@ export default class SilverBullet extends React.Component {
     svgExport += 'xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"\n';
     svgExport += 'viewBox="0 0 595.3 841.9" enable-background="new 0 0 595.3 841.9" xml:space="preserve">';
     svgExport += chartStyles;
+    // Embed content in group with transform down the page
+    // (Eventually calculate by chart size...)
     svgExport += '<g transform="translate(100 100)">';
     svgExport += svgString;
     svgExport += '</g></svg>';
@@ -272,7 +274,6 @@ getScaleMinMaxIncr(minVal, maxVal, stepNo) {
 // Harvest CSS for SVG node
 // (see: http://spin.atomicobject.com/2014/01/21/convert-svg-to-png/)
 getChartStyles() {
-  // return "CSS prepends\n";
   let used = '';
   const sheets = document.styleSheets;
   for (let i = 0; i < sheets.length; i++) {
@@ -280,12 +281,10 @@ getChartStyles() {
     for (let ruleNo = 0; ruleNo < rules.length; ruleNo++) {
       const rule = rules[ruleNo];
       if (typeof (rule.style) !== 'undefined') {
-        // const elems = dom.querySelectorAll(rule.selectorText);
         const elems = document.querySelectorAll(rule.selectorText);
         if (elems.length > 0) {
           const selText = rule.selectorText;
-          if (selText.search('d3') >= 0) {
-            // used += selText + ' { ' + rule.style.cssText + ' }\n';
+          if (selText.includes('d3')) {
             used += `${selText} { ${rule.style.cssText} }\n`;
           }
         }
