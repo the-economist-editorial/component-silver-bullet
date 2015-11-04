@@ -12,9 +12,11 @@
   "yOrient": "left",
   "style": "bars",
   "strings": {
-    "title": { "content": "Title to come in undue course in due course...", "class": "silver-d3-title-string" },
+    "title": { "content": "Title to come, title to come, title to come...", "class": "silver-d3-title-string" },
     "subtitle": { "content": "Subtitle to come...", "class": "silver-d3-subtitle-string" },
     "source": { "content": "Source: to come", "class": "silver-d3-source-string" },
     "footnote": { "content": "Footnote to come...", "class": "silver-d3-footnote-string" }
-  }
+  },
+  "seriesCount": 1,
+  "pointCount": 2
 }

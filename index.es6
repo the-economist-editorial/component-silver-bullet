@@ -41,12 +41,15 @@ export default class SilverBullet extends React.Component {
 
   // CATCH DATA CHANGE EVENT
   // Called from render > textarea > change event
+  // *** N.B.: although I return a headers property, it doesn't get used...
   catchDataChangeEvent(event) {
     const config = this.state.config;
     const newData = this.tsvToDataArray(event.target.value);
     config.data = newData.data;
     const mmiObj = this.getScaleMinMaxIncr(0, newData.maxVal, 5);
     config.xDomain = [ 0, mmiObj.max ];
+    config.pointCount = newData.pointCount;
+    config.seriesCount = newData.seriesCount;
     this.setState({ config });
   }
   // CATCH DATA CHANGE EVENT ends
@@ -150,7 +153,7 @@ export default class SilverBullet extends React.Component {
     const dArray = [];
     // Convert string to an array (by rows)
     const data = tsv.split(/\r?\n/);
-    // Count rows:
+    // Count rows (points):
     let rLen = data.length;
     // Now turn each 'row' into an array:
     for (let rNo = 0; rNo < rLen; rNo++) {
@@ -160,6 +163,7 @@ export default class SilverBullet extends React.Component {
     const cLen = data[0].length;
     // So now we have an array of arrays...
     // Do we have headers? If not, invent them:
+    // (*** more to do here: can't stay locked to category/value ***)
     let headArray = [];
     if (data[0][0] === 'category') {
       headArray = data.shift();
@@ -197,8 +201,9 @@ export default class SilverBullet extends React.Component {
       }
       dArray.push(tempObj);
     }
-    // Return data (array of objects), maxVal and array of headers
-    return { data: dArray, maxVal, headers: headArray };
+    // Return data (array of objects), maxVal and array of headers, plus
+    // number of series (i.e. cols - 1) and points (rows, without headers)
+    return { data: dArray, maxVal, headers: headArray, seriesCount: (cLen - 1), pointCount: rLen };
   }
   // CSV TO JSON ends
 
