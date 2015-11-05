@@ -1,6 +1,7 @@
 /* global document */
 import React from 'react';
 import Dthree from 'd3';
+// Context components -- only 'print' so far...
 import PrintStyles from '@economist/component-silver-styles-print';
 
 export default class SilverBullet extends React.Component {
@@ -20,7 +21,7 @@ export default class SilverBullet extends React.Component {
   // 'Value' is added to this as it progresses down the tree...
   static get defaultProps() {
     return {
-      // Plausible scale increments
+      // Plausible scale increments. In due course, these move to an external lookup:
       plausibleincrements: [ 0.25, 0.5, 1, 2, 3, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 2000 ],
     };
   }
@@ -41,15 +42,20 @@ export default class SilverBullet extends React.Component {
 
   // CATCH DATA CHANGE EVENT
   // Called from render > textarea > change event
+  // Override existing config with updated data
   // *** N.B.: although I return a headers property, it doesn't get used...
   catchDataChangeEvent(event) {
     const config = this.state.config;
+    // Grab the textarea's contents and convert to useable format
     const newData = this.tsvToDataArray(event.target.value);
     config.data = newData.data;
+    // Min/max/increment:
     const mmiObj = this.getScaleMinMaxIncr(0, newData.maxVal, 5);
+    // D3 domain; number of points and series
     config.xDomain = [ 0, mmiObj.max ];
     config.pointCount = newData.pointCount;
     config.seriesCount = newData.seriesCount;
+    config.longestCatString = newData.longestCatString;
     this.setState({ config });
   }
   // CATCH DATA CHANGE EVENT ends
@@ -94,18 +100,19 @@ export default class SilverBullet extends React.Component {
     // We also need the styles, so:
     const chartStyles = this.getChartStyles();
     // ... returns complete <defs><styles>... tag structure
+    // (This is messy: move to operations.json...)
     let svgExport = '<?xml version="1.0" encoding="utf-8"?>\n';
     svgExport += '<!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n';
     svgExport += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n';
     svgExport += '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" ';
     svgExport += 'xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"\n';
-    svgExport += 'viewBox="0 0 595.3 841.9" enable-background="new 0 0 595.3 841.9" xml:space="preserve">';
+    svgExport += 'viewBox="0 0 595.3 841.9" enable-background="new 0 0 595.3 841.9" xml:space="preserve">\n';
     svgExport += chartStyles;
     // Embed content in group with transform down the page
     // (Eventually calculate by chart size...)
-    svgExport += '<g transform="translate(100 100)">';
+    svgExport += '\n<g transform="translate(100 100)">\n';
     svgExport += svgString;
-    svgExport += '</g></svg>';
+    svgExport += '\n</g>\n</svg>';
     this.downloadSvg(svgExport);
     this.setState({ getSvg: false });
   }
@@ -148,8 +155,10 @@ export default class SilverBullet extends React.Component {
   // *** CURRENT ASSUMPTION THAT THERE'S JUST ONE SERIES ***
   // Returns an object with data and maxVal properties
   tsvToDataArray(tsv) {
-    // Max val and data array to return:
+    // Max val, longest cat string, and data array to return:
     let maxVal = 0;
+    let maxCatLen = 0;
+    let longestCat = '.';
     const dArray = [];
     // Convert string to an array (by rows)
     const data = tsv.split(/\r?\n/);
@@ -197,13 +206,22 @@ export default class SilverBullet extends React.Component {
           if (val > maxVal) {
             maxVal = val;
           }
+        } else {
+          // Finding longest category string...
+          const catLen = val.length;
+          if (catLen > maxCatLen) {
+            maxCatLen = catLen;
+            longestCat = val;
+          }
         }
       }
       dArray.push(tempObj);
     }
     // Return data (array of objects), maxVal and array of headers, plus
-    // number of series (i.e. cols - 1) and points (rows, without headers)
-    return { data: dArray, maxVal, headers: headArray, seriesCount: (cLen - 1), pointCount: rLen };
+    // number of series (i.e. cols - 1) and points (rows, without headers),
+    // and longest string found...
+    return { data: dArray, maxVal, headers: headArray, seriesCount: (cLen - 1),
+      pointCount: rLen, longestCatString: longestCat };
   }
   // CSV TO JSON ends
 
@@ -259,7 +277,6 @@ getScaleMinMaxIncr(minVal, maxVal, stepNo) {
       break;
     }
   }
-
   // From zero, lower min to next acceptable value on or below inherited min
   while (Math.floor(min) > Math.floor(minVal)) {
     min -= incr;
@@ -313,7 +330,6 @@ getChartStyles() {
   // defs.appendChild(sty);
   // Anyway: this appends the style to the document.head...
 }
-
 
 // RENDER
 // A note on structure. There's an outermost-wrapper to
