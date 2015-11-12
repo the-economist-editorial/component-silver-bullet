@@ -1,8 +1,10 @@
 /* global document */
 import React from 'react';
-import Dthree from 'd3';
+// import Dthree from 'd3';
 // Context components -- only 'print' so far...
 import PrintStyles from '@economist/component-silver-styles-print';
+// Operational preferences:
+import Operations from './assets/operations.json';
 
 export default class SilverBullet extends React.Component {
 
@@ -10,22 +12,10 @@ export default class SilverBullet extends React.Component {
   static get propTypes() {
     return {
       config: React.PropTypes.object.isRequired,
-      plausibleincrements: React.PropTypes.array,
       test: React.PropTypes.string,
     };
   }
   // PROP TYPES ends
-
-  // DEFAULT PROPS
-  // Default configuration object, including some boring data.
-  // 'Value' is added to this as it progresses down the tree...
-  static get defaultProps() {
-    return {
-      // Plausible scale increments. In due course, these move to an external lookup:
-      plausibleincrements: [ 0.25, 0.5, 1, 2, 3, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 2000 ],
-    };
-  }
-  // DEFAULT PROPS ends
 
   // CONSTRUCTOR
   // Set default state
@@ -33,6 +23,7 @@ export default class SilverBullet extends React.Component {
     super(props);
     this.state = {
       config: props.config,
+      // Set flag for SVG retrieval to default false
       getSvg: false,
     };
   }
@@ -43,16 +34,18 @@ export default class SilverBullet extends React.Component {
   // CATCH DATA CHANGE EVENT
   // Called from render > textarea > change event
   // Override existing config with updated data
-  // *** N.B.: although I return a headers property, it doesn't get used...
   catchDataChangeEvent(event) {
     const config = this.state.config;
     // Grab the textarea's contents and convert to useable format
     const newData = this.tsvToDataArray(event.target.value);
     config.data = newData.data;
     // Min/max/increment:
-    const mmiObj = this.getScaleMinMaxIncr(0, newData.maxVal, 5);
+    // *** Careful: HARD-WIRED TO SINGLE-SCALE AT PRESENT.
+    // *** Will need to work with 2 scales on scatter charts, eventually...
+    const mmiObj = this.getScaleMinMaxIncr(0, newData.maxVal, Operations.stepNo);
     // D3 domain; number of points and series
     config.xDomain = [ 0, mmiObj.max ];
+    config.ticks = mmiObj.ticks;
     config.pointCount = newData.pointCount;
     config.seriesCount = newData.seriesCount;
     config.longestCatString = newData.longestCatString;
@@ -82,44 +75,45 @@ export default class SilverBullet extends React.Component {
   // CATCH DATA KEY DOWN EVENT ends
 
   // CATCH EXPORT-PNG CLICK
+  // When user clicks the EXPORT button, the state flag getSvg is set to true,
+  // precipitating a re-render that passes down the request for the SVG content
   catchPngExportClick() {
-    // const thisDomNode =  React.findDOMNode(this.refs.chartwrapper);
-    // Currently, this returns the contents of the SVG wrapper:
-    // thisDomNode.childNodes[0].childNodes[0].childNodes[0].innerHTML
     this.setState({ getSvg: true });
-    // debugger;
   }
   // CATCH EXPORT-PNG CLICK ends
 
   // CATCH RETURNED SVG
   // Callback for SVG content returned from style-specific component
-  // Currently just crows. But will eventually do something with it...
-  // And sets the svg event flag off again
+  // Sets the state flag getSVG off again
+  // svgString is the SVG node's content, passed up from the style component
   catchReturnedSvg(svgString) {
-    // So svgString is the SVG node's content
-    // We also need the styles, so:
-    const chartStyles = this.getChartStyles();
-    // ... returns complete <defs><styles>... tag structure
-    // (This is messy: move to operations.json...)
-    let svgExport = '<?xml version="1.0" encoding="utf-8"?>\n';
-    svgExport += '<!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n';
-    svgExport += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n';
-    svgExport += '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" ';
-    svgExport += 'xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"\n';
-    svgExport += 'viewBox="0 0 595.3 841.9" enable-background="new 0 0 595.3 841.9" xml:space="preserve">\n';
-    svgExport += chartStyles;
+    // Assemble an SVG file from boilerplate in Operations
+    let svgExport = '';
+    // Headers
+    for (const head in Operations.svgHeader) {
+      svgExport += Operations.svgHeader[head];
+    }
+    // We need to apply CSS styles to the SVG, so harvest and append them...
+    svgExport += this.getChartStyles();
     // Embed content in group with transform down the page
     // (Eventually calculate by chart size...)
-    svgExport += '\n<g transform="translate(100 100)">\n';
+    svgExport += Operations.svgTransform;
+    // Actual SVG content
     svgExport += svgString;
-    svgExport += '\n</g>\n</svg>';
+    // ...and footer
+    svgExport += Operations.svgFooter;
     this.downloadSvg(svgExport);
+    // Reset flag... until the next time...
     this.setState({ getSvg: false });
   }
   // CATCH RETURNED SVG ends
 
+  // *** EVENT CATCHERS END ***
+
+  // *** SVG PARSERS ***
+
   // DOWNLOAD SVG
-  // Called from catchReturnedSvg. Passed the svg string,
+  // Called from catchReturnedSvg. Passed the complete svg text,
   // it downloads it to a datastamped .svg file...
   downloadSvg(text) {
     const aElement = document.createElement('a');
@@ -148,7 +142,35 @@ export default class SilverBullet extends React.Component {
   }
   // MAKE SVG FILENAME ends
 
-  // *** UTILITIES ***
+  // GET CHART STYLES
+  // Harvest CSS for SVG export
+  // (see: http://spin.atomicobject.com/2014/01/21/convert-svg-to-png/)
+  getChartStyles() {
+    let used = '';
+    const sheets = document.styleSheets;
+    for (let i = 0; i < sheets.length; i++) {
+      const rules = sheets[i].cssRules;
+      for (let ruleNo = 0; ruleNo < rules.length; ruleNo++) {
+        const rule = rules[ruleNo];
+        if (typeof (rule.style) !== 'undefined') {
+          const elems = document.querySelectorAll(rule.selectorText);
+          if (elems.length > 0) {
+            const selText = rule.selectorText;
+            if (selText.includes('d3')) {
+              used += `${selText} { ${rule.style.cssText} }\n`;
+            }
+          }
+        }
+      }
+    }
+    // Pre/append tags:
+    const pref = '<defs>\n<style type="text/css"><![CDATA[\n';
+    const suff = '\n]]></style>\n</defs>';
+    return pref + used + suff;
+  }
+  // GET CHART STYLES ends
+
+  // *** SVG PARSERS END ***
 
   // TSV TO DATA ARRAY
   // Converts tsv into an array of objects with 'category' and 'value' properties
@@ -220,21 +242,58 @@ export default class SilverBullet extends React.Component {
     // Return data (array of objects), maxVal and array of headers, plus
     // number of series (i.e. cols - 1) and points (rows, without headers),
     // and longest string found...
-    return { data: dArray, maxVal, headers: headArray, seriesCount: (cLen - 1),
-      pointCount: rLen, longestCatString: longestCat };
+    return {
+      data: dArray,
+      maxVal,
+      headers: headArray,
+      seriesCount: (cLen - 1),
+      pointCount: rLen,
+      longestCatString: longestCat,
+    };
   }
   // CSV TO JSON ends
 
-  // PARSE NEW DATA WITH D3
-  // Not called, but demos D3's tsv.parse method
-  parseNewData(dataString) {
-    if (dataString.search('category') !== 0) {
-      const dataHeaders = 'category\tvalue\n';
-      dataString = `${dataHeaders}${dataString}`;
+  // MIN MAX OBJECT
+  // Passed 3 args: actual min val; actual max val; ideal number of increment-steps
+  // Returns obj with 4 properties: min, max, increment and an updated step-count
+  getScaleMinMaxIncr(minVal, maxVal, stepNo) {
+    const mmObj = {};
+    // Array of "acceptable" increments
+    const plausibleIncrs = Operations.plausibleIncrements;
+    let min = 0;
+    let max = 0;
+    // Min can't exceed zero; max can't be less than zero
+    minVal = Math.min(0, minVal);
+    maxVal = Math.max(0, maxVal);
+    // Do (max-min) / steps to get a raw increment
+    let incr = (maxVal - minVal) / stepNo;
+    // Increment is presumably imperfect, so loop through
+    // the array of values, raising the increment
+    // to the next acceptable value
+    for (let i = 0; i < plausibleIncrs.length; i++) {
+      const plausVal = plausibleIncrs[i];
+      if (plausVal >= incr) {
+        incr = plausVal;
+        break;
+      }
     }
-    const data = Dthree.tsv.parse(dataString);
-    return data;
+    // From zero, lower min to next acceptable value on or below inherited min
+    while (Math.floor(min) > Math.floor(minVal)) {
+      min -= incr;
+    }
+    // From zero, raise max to next acceptable value on or above inherited max
+    while (max < maxVal) {
+      max += incr;
+    }
+    // Revise steps?
+    const ticks = (max - min) / incr;
+    mmObj.min = min;
+    mmObj.max = max;
+    mmObj.increment = incr;
+    mmObj.ticks = ticks;
+    return mmObj;
   }
+  // MIN MAX OBJECT ends
 
   // GET CHART CONTEXT
   // Called from render
@@ -253,123 +312,45 @@ export default class SilverBullet extends React.Component {
   }
   // GET CHART CONTEXT ends
 
-  // MIN MAX OBJECT
-// Passed 3 args: actual min val; actual max val; ideal number of increment-steps
-// Returns obj with 3 properties: min, max, increment
-getScaleMinMaxIncr(minVal, maxVal, stepNo) {
-  const mmObj = {};
-  // Array of "acceptable" increments
-  const plausibleIncrs = this.props.plausibleincrements;
-  let min = 0;
-  let max = 0;
-  // Min can't exceed zero; max can't be less than zero
-  minVal = Math.min(0, minVal);
-  maxVal = Math.max(0, maxVal);
-  // Do (max-min) / steps to get a raw increment
-  let incr = (maxVal - minVal) / stepNo;
-  // Increment is presumably imperfect, so loop through
-  // the array of values, raising the increment
-  // to the next acceptable value
-  for (let i = 0; i < plausibleIncrs.length; i++) {
-    const plausVal = plausibleIncrs[i];
-    if (plausVal >= incr) {
-      incr = plausVal;
-      break;
-    }
-  }
-  // From zero, lower min to next acceptable value on or below inherited min
-  while (Math.floor(min) > Math.floor(minVal)) {
-    min -= incr;
-  }
-  // From zero, raise max to next acceptable value on or above inherited max
-  while (max < maxVal) {
-    max += incr;
-  }
-  mmObj.min = min;
-  mmObj.max = max;
-  mmObj.increment = incr;
-  return mmObj;
-}
-// MIN MAX OBJECT ends
-
-// GET CHART STYLES
-// Harvest CSS for SVG node
-// (see: http://spin.atomicobject.com/2014/01/21/convert-svg-to-png/)
-getChartStyles() {
-  let used = '';
-  const sheets = document.styleSheets;
-  for (let i = 0; i < sheets.length; i++) {
-    const rules = sheets[i].cssRules;
-    for (let ruleNo = 0; ruleNo < rules.length; ruleNo++) {
-      const rule = rules[ruleNo];
-      if (typeof (rule.style) !== 'undefined') {
-        const elems = document.querySelectorAll(rule.selectorText);
-        if (elems.length > 0) {
-          const selText = rule.selectorText;
-          if (selText.includes('d3')) {
-            used += `${selText} { ${rule.style.cssText} }\n`;
-          }
-        }
-      }
-    }
-  }
-  // Pre/append tags:
-  const pref = '<defs>\n<style type="text/css"><![CDATA[\n';
-  const suff = '\n]]></style>\n</defs>';
-  return pref + used + suff;
-  // The following would append a new style node to the document head node
-  // Left here in case it's useful
-  /*
-  const sty = document.createElement('style');
-  sty.setAttribute('type', 'text/css');
-  sty.innerHTML = '<![CDATA[\n' + used + '\n]]>';
-  document.getElementsByTagName('head')[0].appendChild(sty);
-  */
-  // I could embed this in a defs tag...
-  // const defs = document.createElement('defs');
-  // defs.appendChild(sty);
-  // Anyway: this appends the style to the document.head...
-}
-
-// RENDER
-// A note on structure. There's an outermost-wrapper to
-// wrap *everything*. Then the mainouter-wrapper holds the main content;
-// and there's a sticky footer-wrapper at the bottom...
-render() {
-  const config = this.state.config;
-  const getSvg = this.state.getSvg;
-  // Use appropriate CSS over-rides:
-  const chartContext = this.getChartContext(config, getSvg);
-  const defaultTextValue = 'Paste data here\n(Row 1 must include "category" and "value" headers)';
-  return (
-    <div className="silverbullet-outermost-wrapper">
-      <div className="silverbullet-mainouter-wrapper">
-        <div className="silverbullet-maininner-wrapper">
-          <div className="silverbullet-chart-wrapper" ref="chartwrapper">
-            {chartContext}
+  // RENDER
+  // A note on structure. There's an outermost-wrapper to
+  // wrap *everything*. Then the mainouter-wrapper holds the main content;
+  // and there's a sticky footer-wrapper at the bottom...
+  render() {
+    const config = this.state.config;
+    const getSvg = this.state.getSvg;
+    // Use appropriate CSS over-rides:
+    const chartContext = this.getChartContext(config, getSvg);
+    const defaultTextValue = 'Paste data here\n(Row 1 must include "category" and "value" headers)';
+    return (
+      <div className="silverbullet-outermost-wrapper">
+        <div className="silverbullet-mainouter-wrapper">
+          <div className="silverbullet-maininner-wrapper">
+            <div className="silverbullet-chart-wrapper" ref="chartwrapper">
+              {chartContext}
+            </div>
+            <div className="silverbullet-editor-wrapper" config={config}>
+              <textarea
+                className="silverbullet-editor-datafield"
+                defaultValue={defaultTextValue}
+                onChange={this.catchDataChangeEvent.bind(this)}
+                onKeyDown={this.catchDataKeydownEvent.bind(this)}
+              >
+              </textarea>
+            </div>
           </div>
-          <div className="silverbullet-editor-wrapper" config={config}>
-            <textarea
-              className="silverbullet-editor-datafield"
-              defaultValue={defaultTextValue}
-              onChange={this.catchDataChangeEvent.bind(this)}
-              onKeyDown={this.catchDataKeydownEvent.bind(this)}
-            >
-            </textarea>
-          </div>
+          <div className="silverbullet-push-footer"></div>
         </div>
-        <div className="silverbullet-push-footer"></div>
-      </div>
-      <div className="silverbullet-footer-wrapper">
-        <div className="silverbullet-export-wrapper">
-          <div className="silverbullet-export-button" id="silverbullet-export-png">
-            <p onClick={this.catchPngExportClick.bind(this)}>Export SVG</p>
+        <div className="silverbullet-footer-wrapper">
+          <div className="silverbullet-export-wrapper">
+            <div className="silverbullet-export-button" id="silverbullet-export-png">
+              <p onClick={this.catchPngExportClick.bind(this)}>Export SVG</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-// RENDER ends
+    );
+  }
+  // RENDER ends
 
 }

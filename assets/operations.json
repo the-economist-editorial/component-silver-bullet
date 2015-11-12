@@ -1,6 +1,17 @@
 {
   "duration": [0, 500],
-  "plausibleincrements": [ 0.25, 0.5, 1, 2, 3, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 2000 ],
+  "plausibleIncrements": [ 0.25, 0.5, 1, 2, 3, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 2000 ],
   "depthsArray": [ 8, 14, 18, 20 ],
   "gap": {"bar": 5, "column": 5},
+  "ticks": 2,
+  "svgHeader": [
+    "<?xml version='1.0' encoding='utf-8'?>\n",
+    "<!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n",
+    "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n",
+    "<svg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg'\n",
+    "xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px'\n",
+    "viewBox='0 0 595.3 841.9' enable-background='new 0 0 595.3 841.9' xml:space='preserve'>\n",
+  ],
+  "svgTransform": "<g transform='translate(100 100)'>\n",
+  "svgFooter": "\n</g>\n</svg>"
 }
