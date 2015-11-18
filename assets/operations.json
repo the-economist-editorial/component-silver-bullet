@@ -3,7 +3,8 @@
   "plausibleIncrements": [ 0.25, 0.5, 1, 2, 3, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 2000 ],
   "depthsArray": [ 8, 14, 18, 20 ],
   "gap": {"bar": 5, "column": 5},
-  "ticks": 2,
+  "TICKS_PROPERTY": "...is here for now, but eventually moves (I think) into the Editor for the user to play with...",
+  "ticks": 5,
   "svgHeader": [
     "<?xml version='1.0' encoding='utf-8'?>\n",
     "<!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n",

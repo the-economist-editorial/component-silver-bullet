@@ -42,10 +42,11 @@ export default class SilverBullet extends React.Component {
     // Min/max/increment:
     // *** Careful: HARD-WIRED TO SINGLE-SCALE AT PRESENT.
     // *** Will need to work with 2 scales on scatter charts, eventually...
-    const mmiObj = this.getScaleMinMaxIncr(0, newData.maxVal, Operations.stepNo);
-    // D3 domain; number of points and series
-    config.xDomain = [ 0, mmiObj.max ];
-    config.ticks = mmiObj.ticks;
+    // AND PROBABLY IN THE WRONG PLACE -- MOVES DOWN TO ChartWrapper, or something...
+    const mmiObj = this.getScaleMinMaxIncr(0, newData.maxVal, Operations.ticks);
+    // Unpick:
+    config.minmax = mmiObj;
+    // config.ticks = mmiObj.ticks;
     config.pointCount = newData.pointCount;
     config.seriesCount = newData.seriesCount;
     config.longestCatString = newData.longestCatString;
@@ -285,7 +286,7 @@ export default class SilverBullet extends React.Component {
     while (max < maxVal) {
       max += incr;
     }
-    // Revise steps?
+    // Revise number of ticks?
     const ticks = (max - min) / incr;
     mmObj.min = min;
     mmObj.max = max;

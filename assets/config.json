@@ -1,25 +1,23 @@
 {
   "context": "print",
+  "style": "bars",
   "data": [
     { "category": "Two", "value": 2 },
     { "category": "Four", "value": 4 }
   ],
-  "dimensions": { "width": 160, "height": 155 },
-  "margins": { "top": 40, "right": 12, "bottom": 15, "left": 12 },
-  "xDomain": [ 0, 5 ],
-  "yDomain": [],
-  "xOrient": "top",
-  "yOrient": "left",
-  "ticks": 2,
-  "style": "bars",
   "strings": {
-    "title": { "content": "Title to come, title to come, title to come...", "class": "silver-d3-title-string" },
-    "subtitle": { "content": "Subtitle to come...", "class": "silver-d3-subtitle-string" },
-    "source": { "content": "Source: to come", "class": "silver-d3-source-string" },
-    "footnote": { "content": "Footnote to come...", "class": "silver-d3-footnote-string" }
+    "title": { "content": "Title to come, title to come, title to come, title to come" },
+    "subtitle": { "content": "Subtitle to comewith additional text to force us to wrap" },
+    "source": { "content": "Source: to come with additional text to force us to wrap and wrap and wrap" },
+    "footnote": { "content": "Footnote to come..." }
   },
+  "dimensions": {
+    "outerbox": { "width": 160, "height": 155 }
+  },
+  "_____REVISED_DOWN_TO_HERE_____": "Properties above are confirmed; below need sorting out and removing if redundant...",
+  "_____PROPERTIES BELOW_____": "...are calculated on pasted data but, for now at least, hard set for the default data above...",
   "seriesCount": 1,
   "pointCount": 2,
   "longestCatString": "Four",
-  "minmax": {"min":0, "max": 5, "increment": 1}
+  "minmax": {"min":0, "max": 5, "increment": 1, "ticks": 5}
 }
