@@ -7,8 +7,8 @@
   ],
   "strings": {
     "title": { "content": "Title to come, title to come, title to come, title to come" },
-    "subtitle": { "content": "Subtitle to comewith additional text to force us to wrap" },
-    "source": { "content": "Source: to come with additional text to force us to wrap and wrap and wrap" },
+    "subtitle": { "content": "Subtitle to come with additional text to force us to wrap" },
+    "source": { "content": "Source: to come with additional text to force wrap" },
     "footnote": { "content": "Footnote to come..." }
   },
   "dimensions": {
