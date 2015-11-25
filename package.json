@@ -38,7 +38,7 @@
   },
   "devpack-doc": {
     "demohtml": {
-      "cmd": "babel-node -p \"require('react').renderToString(require('./example'))\""
+      "cmd": "babel-node -p \"require('react-dom').renderToString(require('./example'))\""
     },
     "css": [
       {
@@ -60,6 +60,9 @@
         "src": "./node_modules/chai-spies/chai-spies.js"
       },
       {
+        "src": "./node_modules/json-editor/dist/jsoneditor.js"
+      },
+      {
         "contents": "chai.should();mocha.setup('bdd');"
       },
       "./testbundle.js",
@@ -67,7 +70,7 @@
         "contents": "window.React = require('react');"
       },
       {
-        "contents": "require('react').render(require('example'),document.getElementById('component-preview'));"
+        "contents": "require('react-dom').render(require('example'),document.getElementById('component-preview'));"
       },
       {
         "contents": "if(document.getElementById('mocha')){mocha.checkLeaks();mocha.run();}"
@@ -100,7 +103,7 @@
   },
   "config": {
     "lint_opts": "--ignore-path .gitignore --ext .es6",
-    "testbundle_opts": "-r react -r .:./index.es6 -r ./example.js:example ./test/index.js -o testbundle.js",
+    "testbundle_opts": "-r react -r react-dom -r .:./index.es6 -r ./example.js:example ./test/index.js -o testbundle.js",
     "ghpages_files": "*.html *.css *.js assets/"
   },
   "scripts": {
@@ -125,9 +128,10 @@
     "watch": "parallelshell 'npm run doc:watch' 'npm run prepublish:watch' 'npm run serve'"
   },
   "dependencies": {
-    "react": "^0.14.0",
+    "@economist/component-silver-editor": "^1.0.0",
+    "@economist/component-silver-styles-print": "^1.0.0",
     "d3": "^3.5.6",
-    "@economist/component-silver-styles-print": "^1.0.0"
+    "react": "^0.14.1"
   },
   "devDependencies": {
     "@economist/component-devpack": "^3.4.3",

@@ -1,4 +1,6 @@
 @import '@economist/component-silver-styles-print';
+@import '@economist/component-silver-editor';
+/*@import '@economist/component-silver-editor';*/
  /*
 html, body {
   height: 100%;

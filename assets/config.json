@@ -2,14 +2,14 @@
   "context": "print",
   "style": "bars",
   "data": [
-    { "category": "Two", "value": 2 },
-    { "category": "Four", "value": 4 }
+    { "category": "", "value": 0 },
+    { "category": "", "value": 0 }
   ],
   "strings": {
-    "title": { "content": "Title to come, title to come, title to come, title to come" },
-    "subtitle": { "content": "Subtitle to come with additional text to force us to wrap" },
-    "source": { "content": "Source: to come with additional text to force wrap" },
-    "footnote": { "content": "Footnote to come..." }
+    "title": { "content": "" },
+    "subtitle": { "content": "" },
+    "source": { "content": "" },
+    "footnote": { "content": "" }
   },
   "dimensions": {
     "outerbox": { "width": 160, "height": 155 }
@@ -18,6 +18,6 @@
   "_____PROPERTIES BELOW_____": "...are calculated on pasted data but, for now at least, hard set for the default data above...",
   "seriesCount": 1,
   "pointCount": 2,
-  "longestCatString": "Four",
-  "minmax": {"min":0, "max": 5, "increment": 1, "ticks": 5}
+  "longestCatString": "",
+  "minmax": {"min":0, "max": 1, "increment": 1, "ticks": 1}
 }

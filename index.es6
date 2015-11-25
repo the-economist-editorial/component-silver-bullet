@@ -3,6 +3,7 @@ import React from 'react';
 // import Dthree from 'd3';
 // Context components -- only 'print' so far...
 import PrintStyles from '@economist/component-silver-styles-print';
+import SilverEditor from '@economist/component-silver-editor';
 // Operational preferences:
 import Operations from './assets/operations.json';
 
@@ -28,6 +29,13 @@ export default class SilverBullet extends React.Component {
     };
   }
   // CONSTRUCTOR ends
+
+  // FIELD CONFIG FROM EDITOR
+  // Fcn passed to Editor, fields updated config object and sets state...
+  fieldConfigFromEditor(config) {
+    this.setState({ config });
+  }
+  // FIELD CONFIG FROM EDITOR ends
 
   // *** EVENT CATCHERS ***
 
@@ -56,7 +64,7 @@ export default class SilverBullet extends React.Component {
 
   // CATCH DATA KEY DOWN EVENT
   // Called from render > textarea > keydown event to
-  // pre-empt default tab-insertion and put a tab in data field
+  // pre-empt default tab-switches-focus and put a tab in data field
   catchDataKeydownEvent(event) {
     if (event.keyCode === 9) {
       const target = event.target;
@@ -252,7 +260,7 @@ export default class SilverBullet extends React.Component {
       longestCatString: longestCat,
     };
   }
-  // CSV TO JSON ends
+  // TSV TO DATA ARRAY ends
 
   // MIN MAX OBJECT
   // Passed 3 args: actual min val; actual max val; ideal number of increment-steps
@@ -322,7 +330,18 @@ export default class SilverBullet extends React.Component {
     const getSvg = this.state.getSvg;
     // Use appropriate CSS over-rides:
     const chartContext = this.getChartContext(config, getSvg);
-    const defaultTextValue = 'Paste data here\n(Row 1 must include "category" and "value" headers)';
+    // const defaultTextValue = 'Paste data here\n(Row 1 must include "category" and "value" headers)';
+    // Original editor jsx:
+    /*
+    // <textarea
+    //   className="silverbullet-editor-datafield"
+    //   defaultValue={defaultTextValue}
+    //   onChange={this.catchDataChangeEvent.bind(this)}
+    //   onKeyDown={this.catchDataKeydownEvent.bind(this)}
+    // >
+    // </textarea>
+    */
+
     return (
       <div className="silverbullet-outermost-wrapper">
         <div className="silverbullet-mainouter-wrapper">
@@ -331,13 +350,11 @@ export default class SilverBullet extends React.Component {
               {chartContext}
             </div>
             <div className="silverbullet-editor-wrapper" config={config}>
-              <textarea
-                className="silverbullet-editor-datafield"
-                defaultValue={defaultTextValue}
-                onChange={this.catchDataChangeEvent.bind(this)}
-                onKeyDown={this.catchDataKeydownEvent.bind(this)}
-              >
-              </textarea>
+              <SilverEditor
+                config={config}
+                operations={Operations}
+                passUpdatedConfig={this.fieldConfigFromEditor.bind(this)}
+              />
             </div>
           </div>
           <div className="silverbullet-push-footer"></div>
