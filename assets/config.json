@@ -1,10 +1,11 @@
 {
-  "context": "print",
-  "style": "bars",
+  "context": "none",
+  "style": "none",
   "data": [
     { "category": "", "value": 0 },
     { "category": "", "value": 0 }
   ],
+  "headers": [ "category", "value" ],
   "strings": {
     "title": { "content": "" },
     "subtitle": { "content": "" },
@@ -12,7 +13,10 @@
     "footnote": { "content": "" }
   },
   "dimensions": {
-    "outerbox": { "width": 160, "height": 155 }
+    "print": {
+      "outerbox": { "width": 160, "height": 155 },
+      "margins": { "top": 40, "right": 12, "bottom": 15, "left": 12 }
+    }
   },
   "_____REVISED_DOWN_TO_HERE_____": "Properties above are confirmed; below need sorting out and removing if redundant...",
   "_____PROPERTIES BELOW_____": "...are calculated on pasted data but, for now at least, hard set for the default data above...",
