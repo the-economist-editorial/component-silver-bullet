@@ -12,7 +12,7 @@ export default class SilverBullet extends React.Component {
   // PROP TYPES
   static get propTypes() {
     return {
-      config: React.PropTypes.object.isRequired,
+      // config: React.PropTypes.object.isRequired,
       test: React.PropTypes.string,
     };
   }
@@ -23,17 +23,24 @@ export default class SilverBullet extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      config: props.config,
+      // config: props.config,
       // Set flag for SVG retrieval to default false
       getSvg: false,
     };
   }
   // CONSTRUCTOR ends
 
+  // At mount, set flag that prevents first chart draw, so
+  // that only Editor displays...
+  componentWillMount() {
+    this.setState({ canRenderChart: false });
+  }
+
   // FIELD CONFIG FROM EDITOR
   // Fcn passed to Editor, fields updated config object and sets state...
+  // canRenderChart flag allows chart to render...
   fieldConfigFromEditor(config) {
-    this.setState({ config });
+    this.setState({ config, canRenderChart: true });
   }
   // FIELD CONFIG FROM EDITOR ends
 
@@ -311,12 +318,15 @@ export default class SilverBullet extends React.Component {
   // Passed props are the data object; the getSVG flag;
   // and the callback to which svg content is returned
   getChartContext(config, getSvg) {
+    if (!this.state.canRenderChart) {
+      return <div/>;
+    }
     const contextStr = config.context;
     switch (contextStr) {
       case 'print':
         return <PrintStyles config={config} getSvg={getSvg} passSvg={this.catchReturnedSvg.bind(this)}/>;
       default:
-        return <PrintStyles config={config} getSvg={getSvg} passSvg={this.catchReturnedSvg.bind(this)}/>;
+        return <div/>;
     }
   }
   // GET CHART CONTEXT ends
@@ -327,21 +337,12 @@ export default class SilverBullet extends React.Component {
   // and there's a sticky footer-wrapper at the bottom...
   render() {
     const config = this.state.config;
+    console.log(this.state.config);
     const getSvg = this.state.getSvg;
-    // Use appropriate CSS over-rides:
+    // Use appropriate CSS overrides:
+    // (Unless we've just mounted, so don't draw anything...)
     const chartContext = this.getChartContext(config, getSvg);
     // const defaultTextValue = 'Paste data here\n(Row 1 must include "category" and "value" headers)';
-    // Original editor jsx:
-    /*
-    // <textarea
-    //   className="silverbullet-editor-datafield"
-    //   defaultValue={defaultTextValue}
-    //   onChange={this.catchDataChangeEvent.bind(this)}
-    //   onKeyDown={this.catchDataKeydownEvent.bind(this)}
-    // >
-    // </textarea>
-    */
-
     return (
       <div className="silverbullet-outermost-wrapper">
         <div className="silverbullet-mainouter-wrapper">
@@ -351,7 +352,6 @@ export default class SilverBullet extends React.Component {
             </div>
             <div className="silverbullet-editor-wrapper" config={config}>
               <SilverEditor
-                config={config}
                 operations={Operations}
                 passUpdatedConfig={this.fieldConfigFromEditor.bind(this)}
               />
