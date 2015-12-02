@@ -52,8 +52,8 @@ html, body {
 .silverbullet-chart-wrapper {
   float:left;
   width: 40%;
-  height: 90%;
-  padding: 5%;
+  height: 86%;
+  padding: 5% 5% 0 5%;
   background-color: #efefef;
   position: relative;
 }
@@ -61,9 +61,10 @@ html, body {
 .silverbullet-editor-wrapper {
   float:left;
   width: 50%;
-  height: 100%;
+  height: 95%;
   background-color: #fff;
   position: relative;
+  overflow-y: auto;
 }
 
 .silverbullet-editor-datafield {
