@@ -126,6 +126,8 @@ html, body {
   transform: translateY(-50%);
 }
 .silverbullet-export-button:hover {
-  background-color: red;
-  color: black;
+  background-color: #888;
+}
+.silverbullet-export-button:active {
+  color: #FF0000;
 }

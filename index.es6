@@ -17,6 +17,20 @@ export default class SilverBullet extends React.Component {
   }
   // PROP TYPES ends
 
+  // DEFAULT PROPS
+  // props.silverBullet is a flag that determines whether we work
+  // with user-set dimensions, or (in an eventual 'live' widget)
+  // window size...
+  // NOTE: so we might need to set an aspect-ratio in the eventual
+  // config file...
+  static get defaultProps() {
+    return {
+      silverBullet: true,
+    };
+  }
+  // DEFAULT PROPS ends
+
+
   // CONSTRUCTOR
   // Set default state
   constructor(props) {
@@ -172,6 +186,16 @@ export default class SilverBullet extends React.Component {
   render() {
     const config = this.state.config;
     const getSvg = this.state.getSvg;
+
+    // Just a brief diversion to test how we might get hold
+    // of window size...
+    if (this.props.silverBullet) {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const str = 'At this point I might overwrite config.outerbox.dimensions with window width: ';
+      console.log(`${str}${width} and height: ${height}`);
+    }
+
     // Use context-specific component...
     // (unless we've just mounted, when there's no chart...)
     const chartContext = this.getChartContext(config, getSvg);
