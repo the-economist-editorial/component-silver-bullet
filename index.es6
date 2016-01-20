@@ -3,9 +3,12 @@ import React from 'react';
 // import Dthree from 'd3';
 // Context components -- only 'print' so far...
 import PrintStyles from '@economist/component-silver-styles-print';
+// Editor
 import SilverEditor from '@economist/component-silver-editor';
 // Operational preferences:
-import Operations from './assets/operations.json';
+// NOTE: this var needs to be renamed. If it only contains SVG strings.
+// No: default context is here, too...
+import SilverBulletConfig from './assets/silverbullet_config.json';
 
 export default class SilverBullet extends React.Component {
 
@@ -42,6 +45,7 @@ export default class SilverBullet extends React.Component {
       // Flag that prevents first chart render, so
       // that only Editor renders at mount...
       canRenderChart: false,
+      contextString: SilverBulletConfig.defaultContext,
     };
   }
   // CONSTRUCTOR ends
@@ -64,6 +68,11 @@ export default class SilverBullet extends React.Component {
   }
   // CATCH EXPORT-PNG CLICK ends
 
+  catchContextClick(event) {
+    const contextString = event.target.innerText.toLowerCase();
+    this.setState({ contextString });
+  }
+
   // CATCH RETURNED SVG
   // Callback for SVG content returned from style-specific component
   // Sets the state flag getSVG off again
@@ -72,18 +81,18 @@ export default class SilverBullet extends React.Component {
     // Assemble an SVG file from boilerplate in Operations
     let svgExport = '';
     // Headers
-    for (const head in Operations.svgHeader) {
-      svgExport += Operations.svgHeader[head];
+    for (const head in SilverBulletConfig.svgHeader) {
+      svgExport += SilverBulletConfig.svgHeader[head];
     }
     // We need to apply CSS styles to the SVG, so harvest and append them...
     svgExport += this.getChartStyles();
     // Embed content in group with transform down the page
     // (Eventually calculate by chart size...)
-    svgExport += Operations.svgTransform;
+    svgExport += SilverBulletConfig.svgTransform;
     // Actual SVG content
     svgExport += svgString;
     // ...and footer
-    svgExport += Operations.svgFooter;
+    svgExport += SilverBulletConfig.svgFooter;
     this.downloadSvg(svgExport);
     // Reset flag... until the next time...
     this.setState({ getSvg: false });
@@ -180,29 +189,48 @@ export default class SilverBullet extends React.Component {
   }
   // GET CHART CONTEXT ends
 
+  // GET CHART CONTEXT OPTIONS
+  // Called from render to assemble the context options tab bar
+  // NOTE: this is a temp fix to demonstrate the idea. Proper, dynamic fix --
+  // probably using Umbi's dropdown component -- to come later...
+  getChartContextOptions() {
+    return (<div className="chart-context-choices-div">
+      <div className="context-choice" onClick={this.catchContextClick.bind(this)}>Print</div>
+      <div className="context-choice" onClick={this.catchContextClick.bind(this)}>Other</div>
+    </div>);
+  }
+  // GET CHART CONTEXT OPTIONS ends
+
   // RENDER
   // A note on structure. There's an outermost-wrapper to
   // wrap *everything*. Then the mainouter-wrapper holds the main content;
   // and there's a sticky footer-wrapper at the bottom...
   render() {
-    const config = this.state.config;
+    // Tab bar at top of chart div, for context choices:
+    const chartContextOptions = this.getChartContextOptions();
+    // Flag to make a request for the SVG drawing
     const getSvg = this.state.getSvg;
-
-    // Use context-specific component...
-    // (unless we've just mounted, when there's no chart...)
+    // On startup, config is undefined and getChartContext just returns
+    // an empty div, so that nothing displays on the chart area.
+    // If Editor has returned a config object, get the context-specific component and draw...
+    const config = this.state.config;
     const chartContext = this.getChartContext(config, getSvg);
     return (
       <div className="silverbullet-outermost-wrapper">
         <div className="silverbullet-mainouter-wrapper">
           <div className="silverbullet-maininner-wrapper">
             <div className="silverbullet-chart-wrapper" ref="chartwrapper">
+              {chartContextOptions}
               {chartContext}
             </div>
             <div className="silverbullet-editor-wrapper" config={config}>
               <SilverEditor
-                operations={Operations}
+                contextString = {this.state.contextString}
                 passUpdatedConfig={this.fieldConfigFromEditor.bind(this)}
               />
+              <div className="json-editor-acknowledgement">
+                json-editor copyright (c) 2013 Jeremy Dorn: github.com/jdorn/json-editor
+              </div>
             </div>
           </div>
           <div className="silverbullet-push-footer"></div>

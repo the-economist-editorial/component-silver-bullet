@@ -1,13 +1,4 @@
 {
-  "duration": [0, 500],
-  "plausibleIncrements": [ 0.25, 0.5, 1, 2, 3, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 2000 ],
-  "A_LOT_OF_THIS_STUFF": "...is simply in the wrong lookup file!",
-  "depthsArray": [ 8, 14, 18, 20 ],
-  "NOTE_ABOUT_WIDTHS": "Ideally the Editor schema would refer to this property, rather than hard-code it...",
-  "widths": {"narrow": 160, "medium": 330, "wide": 510},
-  "gap": {"bar": 5, "column": 5},
-  "TICKS_PROPERTY": "...is here for now, but eventually moves (I think) into the Editor for the user to play with...",
-  "ticks": 5,
   "svgHeader": [
     "<?xml version='1.0' encoding='utf-8'?>\n",
     "<!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n",
@@ -18,5 +9,6 @@
   ],
   "svgTransform": "<g transform='translate(100 100)'>\n",
   "svgFooter": "\n</g>\n</svg>",
-  "SVG_FONT_EMBEDDING": "...needs some thinking through..."
+  "NOTE_SVG_FONT_EMBEDDING": "...needs some thinking through...",
+  "defaultContext": "print"
 }

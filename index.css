@@ -129,5 +129,39 @@ html, body {
   background-color: #888;
 }
 .silverbullet-export-button:active {
-  color: #FF0000;
+  color: #f00;
+}
+
+/* Context choice */
+
+.chart-context-choices-div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+}
+.context-choice {
+  height:100%;
+  float:left;
+  width: 49%;
+  background-color: #ccc;
+  text-align: center;
+  line-height: 2em;
+  margin-right: 1%;
+}
+.context-choice:hover {
+  background-color: #888;
+}
+.context-choice:active {
+  color: #f00;
+}
+
+/* Json editor acknowledgement at foot of Editor */
+.json-editor-acknowledgement {
+  margin-top: 20px;
+  font-family: 'OfficinaSanITC-Book';
+  font-size: 10px;
+  text-align: center;
+  color: #777;
 }
