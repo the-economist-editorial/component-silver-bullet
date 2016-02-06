@@ -6,8 +6,7 @@ import PrintStyles from '@economist/component-silver-styles-print';
 // Editor
 import SilverEditor from '@economist/component-silver-editor';
 // Operational preferences:
-// NOTE: this var needs to be renamed. If it only contains SVG strings.
-// No: default context is here, too...
+// NOTE: this var needs to be renamed. If it only contains SVG strings
 import SilverBulletConfig from './assets/silverbullet_config.json';
 
 export default class SilverBullet extends React.Component {
@@ -67,11 +66,6 @@ export default class SilverBullet extends React.Component {
     this.setState({ getSvg: true });
   }
   // CATCH EXPORT-PNG CLICK ends
-
-  catchContextClick(event) {
-    const contextString = event.target.innerText.toLowerCase();
-    this.setState({ contextString });
-  }
 
   // CATCH RETURNED SVG
   // Callback for SVG content returned from style-specific component
@@ -189,25 +183,11 @@ export default class SilverBullet extends React.Component {
   }
   // GET CHART CONTEXT ends
 
-  // GET CHART CONTEXT OPTIONS
-  // Called from render to assemble the context options tab bar
-  // NOTE: this is a temp fix to demonstrate the idea. Proper, dynamic fix --
-  // probably using Umbi's dropdown component -- to come later...
-  getChartContextOptions() {
-    return (<div className="chart-context-choices-div">
-      <div className="context-choice" onClick={this.catchContextClick.bind(this)}>Print</div>
-      <div className="context-choice" onClick={this.catchContextClick.bind(this)}>Other</div>
-    </div>);
-  }
-  // GET CHART CONTEXT OPTIONS ends
-
   // RENDER
   // A note on structure. There's an outermost-wrapper to
   // wrap *everything*. Then the mainouter-wrapper holds the main content;
   // and there's a sticky footer-wrapper at the bottom...
   render() {
-    // Tab bar at top of chart div, for context choices:
-    const chartContextOptions = this.getChartContextOptions();
     // Flag to make a request for the SVG drawing
     const getSvg = this.state.getSvg;
     // On startup, config is undefined and getChartContext just returns
@@ -215,23 +195,18 @@ export default class SilverBullet extends React.Component {
     // If Editor has returned a config object, get the context-specific component and draw...
     const config = this.state.config;
     const chartContext = this.getChartContext(config, getSvg);
+    // NOTE: does the contextString (line 229) ever get used...?
     return (
       <div className="silverbullet-outermost-wrapper">
         <div className="silverbullet-mainouter-wrapper">
           <div className="silverbullet-maininner-wrapper">
             <div className="silverbullet-chart-wrapper" ref="chartwrapper">
-              {chartContextOptions}
               {chartContext}
             </div>
-            <div className="silverbullet-editor-wrapper" config={config}>
-              <SilverEditor
-                contextString = {this.state.contextString}
-                passUpdatedConfig={this.fieldConfigFromEditor.bind(this)}
-              />
-              <div className="json-editor-acknowledgement">
-                json-editor copyright (c) 2013 Jeremy Dorn: github.com/jdorn/json-editor
-              </div>
-            </div>
+            <SilverEditor
+              contextString = {this.state.contextString}
+              passUpdatedConfig={this.fieldConfigFromEditor.bind(this)}
+            />
           </div>
           <div className="silverbullet-push-footer"></div>
         </div>

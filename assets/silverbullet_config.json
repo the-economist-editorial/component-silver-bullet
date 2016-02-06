@@ -10,5 +10,6 @@
   "svgTransform": "<g transform='translate(100 100)'>\n",
   "svgFooter": "\n</g>\n</svg>",
   "NOTE_SVG_FONT_EMBEDDING": "...needs some thinking through...",
+  "NOTE_DEFAULT_CONTEXT": "...may be redundant here since I moved context-setting to Editor, Feb 2016...",
   "defaultContext": "print"
 }
