@@ -51,11 +51,11 @@ html, body {
 
 .silverbullet-chart-wrapper {
   position: absolute;
-  top: 30px;
+  top: 40px;
   left:0;
   width: 48%;
   height: 80%;
-  padding: 2% 0 0 2%;
+  padding: 3% 0 0 2%;
   background-color: #efefef;
 }
 
