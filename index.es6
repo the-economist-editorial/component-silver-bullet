@@ -1,6 +1,4 @@
-/* global document */
 import React from 'react';
-// import Dthree from 'd3';
 // Context components -- only 'print' so far...
 import PrintStyles from '@economist/component-silver-styles-print';
 // Editor
@@ -8,8 +6,12 @@ import SilverEditor from '@economist/component-silver-editor';
 // Operational preferences:
 // NOTE: this var needs to be renamed. If it only contains SVG strings
 import SilverBulletConfig from './assets/silverbullet_config.json';
+// External function for SVG-specific stuff:
+import SvgExport from './svgexport';
 
 export default class SilverBullet extends React.Component {
+
+  // *** REACT STUFF ***
 
   // PROP TYPES
   static get propTypes() {
@@ -36,6 +38,7 @@ export default class SilverBullet extends React.Component {
 
   // CONSTRUCTOR
   // Set default state
+  // NOTE: this thing may have more STATE than it needs...
   constructor(props) {
     super(props);
     this.state = {
@@ -48,6 +51,8 @@ export default class SilverBullet extends React.Component {
     };
   }
   // CONSTRUCTOR ends
+
+  // *** REACT STUFF ENDS ***
 
   // *** EVENT CATCHERS ***
 
@@ -68,95 +73,21 @@ export default class SilverBullet extends React.Component {
   // CATCH EXPORT-PNG CLICK ends
 
   // CATCH RETURNED SVG
-  // Callback for SVG content returned from style-specific component
+  // Callback for SVG content returned from style-specific component.
+  // Calls external function in svgexport.es6 module to process and download SVG.
   // Sets the state flag getSVG off again
-  // svgString is the SVG node's content, passed up from the style component
+  // Arg is the SVG node's content, passed up from the style component
   catchReturnedSvg(svgString) {
-    // Assemble an SVG file from boilerplate in Operations
-    let svgExport = '';
-    // Headers
-    for (const head in SilverBulletConfig.svgHeader) {
-      svgExport += SilverBulletConfig.svgHeader[head];
-    }
-    // We need to apply CSS styles to the SVG, so harvest and append them...
-    svgExport += this.getChartStyles();
-    // Embed content in group with transform down the page
-    // (Eventually calculate by chart size...)
-    svgExport += SilverBulletConfig.svgTransform;
-    // Actual SVG content
-    svgExport += svgString;
-    // ...and footer
-    svgExport += SilverBulletConfig.svgFooter;
-    this.downloadSvg(svgExport);
+    // Config object
+    const svgConfig = SilverBulletConfig.svg;
+    // External function
+    SvgExport(svgString, svgConfig);
     // Reset flag... until the next time...
     this.setState({ getSvg: false });
   }
   // CATCH RETURNED SVG ends
 
   // *** EVENT CATCHERS END ***
-
-  // *** SVG PARSERS ***
-
-  // DOWNLOAD SVG
-  // Called from catchReturnedSvg. Passed the complete svg text,
-  // it downloads it to a datastamped .svg file...
-  downloadSvg(text) {
-    const aElement = document.createElement('a');
-    const fileName = this.makeSvgFilename();
-    aElement.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`);
-    aElement.setAttribute('download', fileName);
-    document.body.appendChild(aElement);
-    if (document.createEvent) {
-      const event = document.createEvent('MouseEvents');
-      event.initEvent('click', true, true);
-      aElement.dispatchEvent(event);
-    } else {
-      aElement.click();
-    }
-    document.body.removeChild(aElement);
-  }
-  // DOWNLOAD SVG ends
-
-  // MAKE SVG FILENAME
-  // Called from downloadSvg to assemble a timestamed svg filename
-  makeSvgFilename() {
-    const myDate = new Date();
-    let timeStamp = `${myDate.getMonth()}-${myDate.getDate()}-`;
-    timeStamp += `${myDate.getHours()}-${myDate.getMinutes()}`;
-    return `svg-${timeStamp}.svg`;
-  }
-  // MAKE SVG FILENAME ends
-
-  // GET CHART STYLES
-  // Harvest CSS for SVG export
-  // (see: http://spin.atomicobject.com/2014/01/21/convert-svg-to-png/)
-  getChartStyles() {
-    let used = '';
-    const sheets = document.styleSheets;
-    for (let i = 0; i < sheets.length; i++) {
-      const rules = sheets[i].cssRules;
-      for (let ruleNo = 0; ruleNo < rules.length; ruleNo++) {
-        const rule = rules[ruleNo];
-        if (typeof (rule.style) !== 'undefined') {
-          const elems = document.querySelectorAll(rule.selectorText);
-          if (elems.length > 0) {
-            const selText = rule.selectorText;
-            if (selText.includes('d3')) {
-              used += `${selText} { ${rule.style.cssText} }\n`;
-            }
-          }
-        }
-      }
-    }
-    // Pre/append tags:
-    const pref = '<defs>\n<style type="text/css"><![CDATA[\n';
-    const suff = '\n]]></style>\n</defs>';
-    return pref + used + suff;
-  }
-  // GET CHART STYLES ends
-
-  // *** SVG PARSERS END ***
-
 
   // GET CHART CONTEXT
   // Called from render
