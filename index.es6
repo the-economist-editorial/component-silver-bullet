@@ -11,7 +11,7 @@ import SvgExport from './svgexport';
 
 export default class SilverBullet extends React.Component {
 
-  // *** REACT STUFF ***
+  // *** REACT LIFECYCLE STUFF ***
 
   // PROP TYPES
   static get propTypes() {
@@ -35,7 +35,6 @@ export default class SilverBullet extends React.Component {
   }
   // DEFAULT PROPS ends
 
-
   // CONSTRUCTOR
   // Set default state
   // NOTE: this thing may have more STATE than it needs...
@@ -47,27 +46,29 @@ export default class SilverBullet extends React.Component {
       // Flag that prevents first chart render, so
       // that only Editor renders at mount...
       canRenderChart: false,
+      // No idea!
       contextString: SilverBulletConfig.defaultContext,
     };
   }
   // CONSTRUCTOR ends
 
-  // *** REACT STUFF ENDS ***
+  // *** REACT LIFECYCLE STUFF ENDS ***
 
   // *** EVENT CATCHERS ***
 
   // FIELD CONFIG FROM EDITOR
   // Callback passed to Editor, catches updated config object and sets state...
   // canRenderChart flag allows chart to render...
-  fieldConfigFromEditor(config) {
-    this.setState({ config, canRenderChart: true });
+  catchConfigFromEditor(config) {
+    console.log(config);
+    // this.setState({ config, canRenderChart: true });
   }
   // FIELD CONFIG FROM EDITOR ends
 
-  // CATCH EXPORT-PNG CLICK
+  // CATCH SVG-EXPORT CLICK
   // When user clicks the EXPORT button, the state flag getSvg is set to true,
   // precipitating a re-render that passes down the request for the SVG content
-  catchPngExportClick() {
+  catchSvgExportClick() {
     this.setState({ getSvg: true });
   }
   // CATCH EXPORT-PNG CLICK ends
@@ -119,14 +120,16 @@ export default class SilverBullet extends React.Component {
   // wrap *everything*. Then the mainouter-wrapper holds the main content;
   // and there's a sticky footer-wrapper at the bottom...
   render() {
+    console.log('Rendering...')
     // Flag to make a request for the SVG drawing
     const getSvg = this.state.getSvg;
     // On startup, config is undefined and getChartContext just returns
     // an empty div, so that nothing displays on the chart area.
     // If Editor has returned a config object, get the context-specific component and draw...
     const config = this.state.config;
+    // This will be redundant if there's no context-split...
     const chartContext = this.getChartContext(config, getSvg);
-    // NOTE: does the contextString (line 229) ever get used...?
+    // NOTE: does state.contextString ever get used...?
     return (
       <div className="silverbullet-outermost-wrapper">
         <div className="silverbullet-mainouter-wrapper">
@@ -136,7 +139,7 @@ export default class SilverBullet extends React.Component {
             </div>
             <SilverEditor
               contextString = {this.state.contextString}
-              passUpdatedConfig={this.fieldConfigFromEditor.bind(this)}
+              passUpdatedConfig={this.catchConfigFromEditor.bind(this)}
             />
           </div>
           <div className="silverbullet-push-footer"></div>
@@ -144,7 +147,7 @@ export default class SilverBullet extends React.Component {
         <div className="silverbullet-footer-wrapper">
           <div className="silverbullet-export-wrapper">
             <div className="silverbullet-export-button" id="silverbullet-export-png">
-              <p onClick={this.catchPngExportClick.bind(this)}>Export SVG</p>
+              <p onClick={this.catchSvgExportClick.bind(this)}>Export SVG</p>
             </div>
           </div>
         </div>
