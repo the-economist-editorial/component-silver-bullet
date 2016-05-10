@@ -1,6 +1,6 @@
 import React from 'react';
-// Context components -- only 'print' so far...
-import PrintStyles from '@economist/component-silver-styles-print';
+// Chartwrapper
+import SilverChartWrapper from '@economist/component-silver-chartwrapper';
 // Editor
 import SilverEditor from '@economist/component-silver-editor';
 // Operational preferences:
@@ -60,8 +60,7 @@ export default class SilverBullet extends React.Component {
   // Callback passed to Editor, catches updated config object and sets state...
   // canRenderChart flag allows chart to render...
   catchConfigFromEditor(config) {
-    console.log(config);
-    // this.setState({ config, canRenderChart: true });
+    this.setState({ config, canRenderChart: true });
   }
   // FIELD CONFIG FROM EDITOR ends
 
@@ -90,52 +89,30 @@ export default class SilverBullet extends React.Component {
 
   // *** EVENT CATCHERS END ***
 
-  // GET CHART CONTEXT
-  // Called from render
-  // Extracts context string ('print', etc) from data and
-  // returns the appropriate child component as JSX
-  // Passed props are the data object; the getSVG flag;
-  // and the callback to which svg content is returned
-  getChartContext(config, getSvg) {
-    // By default, on mount, return empty div (no chart)
-    let cJsx = <div/>;
-    // Thereafter, construct context-specific child
-    if (this.state.canRenderChart) {
-      const contextStr = config.context;
-      // More cases to come, as other contexts introduced...
-      switch (contextStr) {
-        case 'print':
-          cJsx = <PrintStyles config={config} getSvg={getSvg} passSvg={this.catchReturnedSvg.bind(this)}/>;
-          break;
-        default:
-          cJsx = <div/>;
-      }
-    }
-    return cJsx;
-  }
-  // GET CHART CONTEXT ends
-
   // RENDER
   // A note on structure. There's an outermost-wrapper to
   // wrap *everything*. Then the mainouter-wrapper holds the main content;
   // and there's a sticky footer-wrapper at the bottom...
   render() {
-    console.log('Rendering...')
+    // console.log('Rendering...');
     // Flag to make a request for the SVG drawing
     const getSvg = this.state.getSvg;
     // On startup, config is undefined and getChartContext just returns
     // an empty div, so that nothing displays on the chart area.
     // If Editor has returned a config object, get the context-specific component and draw...
     const config = this.state.config;
-    // This will be redundant if there's no context-split...
-    const chartContext = this.getChartContext(config, getSvg);
+    // console.log(config);
     // NOTE: does state.contextString ever get used...?
     return (
       <div className="silverbullet-outermost-wrapper">
         <div className="silverbullet-mainouter-wrapper">
           <div className="silverbullet-maininner-wrapper">
             <div className="silverbullet-chart-wrapper" ref="chartwrapper">
-              {chartContext}
+              <SilverChartWrapper
+                config={config}
+                getSvg={getSvg}
+                passSvg={this.catchReturnedSvg.bind(this)}
+              />
             </div>
             <SilverEditor
               contextString = {this.state.contextString}

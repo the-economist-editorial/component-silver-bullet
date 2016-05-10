@@ -129,7 +129,7 @@
   },
   "dependencies": {
     "@economist/component-silver-editor": "^1.0.0",
-    "@economist/component-silver-styles-print": "^1.0.0",
+    "@economist/component-silver-chartwrapper": "^1.0.0",
     "d3": "^3.5.6",
     "react": "^0.14.1"
   },
@@ -159,5 +159,8 @@
   },
   "pre-commit": [
     "lint"
-  ]
+  ],
+  "directories": {
+    "test": "test"
+  }
 }
