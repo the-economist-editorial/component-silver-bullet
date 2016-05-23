@@ -1,13 +1,15 @@
+// Silver Bullet (aka 'Sibyl') is the top-level component
 import React from 'react';
+// NOTE: dependency ChartWrapper amputated for now
 // Chartwrapper
-import SilverChartWrapper from '@economist/component-silver-chartwrapper';
+// import SilverChartWrapper from '@economist/component-silver-chartwrapper';
 // Editor
 import SilverEditor from '@economist/component-silver-editor';
 // Operational preferences:
 // NOTE: this var needs to be renamed. If it only contains SVG strings
-import SilverBulletConfig from './assets/silverbullet_config.json';
+import SilverBulletConfig from '../assets/silverbullet_config.json';
 // External function for SVG-specific stuff:
-import SvgExport from './svgexport';
+import SvgExport from './svgexport.js';
 
 export default class SilverBullet extends React.Component {
 
@@ -46,9 +48,9 @@ export default class SilverBullet extends React.Component {
       // Flag that prevents first chart render, so
       // that only Editor renders at mount...
       canRenderChart: false,
-      // No idea!
-      contextString: SilverBulletConfig.defaultContext,
     };
+    this.handleConfigFromEditor = this.handleConfigFromEditor.bind(this);
+    this.handleSvgExportClick = this.handleSvgExportClick.bind(this);
   }
   // CONSTRUCTOR ends
 
@@ -59,7 +61,7 @@ export default class SilverBullet extends React.Component {
   // FIELD CONFIG FROM EDITOR
   // Callback passed to Editor, catches updated config object and sets state...
   // canRenderChart flag allows chart to render...
-  catchConfigFromEditor(config) {
+  handleConfigFromEditor(config) {
     this.setState({ config, canRenderChart: true });
   }
   // FIELD CONFIG FROM EDITOR ends
@@ -67,7 +69,7 @@ export default class SilverBullet extends React.Component {
   // CATCH SVG-EXPORT CLICK
   // When user clicks the EXPORT button, the state flag getSvg is set to true,
   // precipitating a re-render that passes down the request for the SVG content
-  catchSvgExportClick() {
+  handleSvgExportClick() {
     this.setState({ getSvg: true });
   }
   // CATCH EXPORT-PNG CLICK ends
@@ -89,42 +91,63 @@ export default class SilverBullet extends React.Component {
 
   // *** EVENT CATCHERS END ***
 
+  // GET CHART WRAPPER
+  // Called from render to assemble JSX for ChartWrapper
+  // Passed props are the config object; the getSVG flag;
+  // and the callback to which svg content is returned
+  // NOTE: Linting disabled until we get ChartWrapper in...
+  /* eslint-disable no-console, no-unused-vars, prefer-const */
+  //
+  getChartWrapper(config, getSvg) {
+    // By default, on mount, return empty div (no chart)
+    let cJsx = <div>Nothing</div>;
+    // Thereafter, construct context-specific child
+    if (this.state.canRenderChart) {
+      console.log('Call to ChartWrapper disabled in getChartWrapper, line 101');
+      // cJsx = <SilverChartWrapper config={config} getSvg={getSvg} passSvg={this.catchReturnedSvg.bind(this)}/>;
+    }
+    /* eslint-enable */
+    return cJsx;
+  }
+  // GET CHART WRAPPER ends
+
   // RENDER
   // A note on structure. There's an outermost-wrapper to
   // wrap *everything*. Then the mainouter-wrapper holds the main content;
   // and there's a sticky footer-wrapper at the bottom...
   render() {
-    // console.log('Rendering...');
     // Flag to make a request for the SVG drawing
     const getSvg = this.state.getSvg;
-    // On startup, config is undefined and getChartContext just returns
+    // On startup, config is undefined and getChartWrapper just returns
     // an empty div, so that nothing displays on the chart area.
-    // If Editor has returned a config object, get the context-specific component and draw...
+    // If Editor has returned a config object, render the ChartWrapper
     const config = this.state.config;
-    // console.log(config);
-    // NOTE: does state.contextString ever get used...?
+    const chartWrapper = this.getChartWrapper(config, getSvg);
+    /* eslint-disable no-console */
+    console.log('Config object as it passes through SilverBullet.render...');
+    console.log(config);
+    /* eslint-enable no-console */
     return (
       <div className="silverbullet-outermost-wrapper">
         <div className="silverbullet-mainouter-wrapper">
           <div className="silverbullet-maininner-wrapper">
+            <div className="silverbullet-header-wrapper" />
             <div className="silverbullet-chart-wrapper" ref="chartwrapper">
-              <SilverChartWrapper
-                config={config}
-                getSvg={getSvg}
-                passSvg={this.catchReturnedSvg.bind(this)}
+              {chartWrapper}
+            </div>
+            <div className="silverbullet-editor-wrapper">
+              <SilverEditor
+                parentCheck = "parentCheck"
+                onPassUpdatedConfig={this.handleConfigFromEditor}
               />
             </div>
-            <SilverEditor
-              contextString = {this.state.contextString}
-              passUpdatedConfig={this.catchConfigFromEditor.bind(this)}
-            />
           </div>
           <div className="silverbullet-push-footer"></div>
         </div>
         <div className="silverbullet-footer-wrapper">
           <div className="silverbullet-export-wrapper">
             <div className="silverbullet-export-button" id="silverbullet-export-png">
-              <p onClick={this.catchSvgExportClick.bind(this)}>Export SVG</p>
+              <p className="silverbullet-export-p" onClick={this.handleSvgExportClick}>Export SVG</p>
             </div>
           </div>
         </div>

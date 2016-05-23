@@ -1,114 +1,118 @@
 @import '@economist/component-silver-editor';
-/*@import '@economist/component-silver-editor';*/
- /*
-html, body {
-  height: 100%;
-  min-width: 300px;
-  max-width: 1191px;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-}
-*/
 
 /* During development, OUTERMOST wrapper has fixed depth */
+
 .silverbullet-outermost-wrapper {
   width: 100%;
-  min-width: 600px;
   max-width: 1191px;
-  /*max-height: 800px;*/
+  min-width: 600px;
   height: 500px;
-  /* or 100% ????????? */
 }
 
 /* MAIN OUTER  wrapper styled to do sticky footer below */
+
 .silverbullet-mainouter-wrapper {
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  margin: 0 auto -50px;
   position: relative;
+  height: 100%;
+  min-height: 100%;
+  margin: 0 auto -50px;
 }
 
 .silverbullet-maininner-wrapper {
+  overflow: hidden;
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: #efefef;
-  overflow: hidden;
   /* Transition would be for small devices, but
     comm'd out because those aren't envisaged.
     See also, media query at bottom of this file */
-  /*-webkit-transition: all 1s ease;
-  -moz-transition: all 1s ease;
-  -o-transition: all 1s ease;
-  -ms-transition: all 1s ease;
-  transition: all 1s ease;*/
+  /* transition: all 1s ease; */
+}
+
+.silverbullet-header-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background-color: #fff;
 }
 
 .silverbullet-chart-wrapper {
   position: absolute;
   top: 40px;
-  left:0;
+  left: 0;
   width: 48%;
   height: 80%;
   padding: 3% 0 0 2%;
   background-color: #efefef;
 }
 
-/* PUSH FOOTER is the empty div to force the sticky footer */
-.silverbullet-push-footer {
-  height: 50px;
-  clear: both;
+/* Wrapper for entire Editor occupies right half of available space... */
+
+.silverbullet-editor-wrapper {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  width: 50%;
+  height: 80%;
+  background-color: #fff;
 }
-/* Actual footer */
-.silverbullet-footer-wrapper {
+
+/* PUSH FOOTER is the empty div to force the sticky footer */
+
+.silverbullet-push-footer {
+  clear: both;
   height: 50px;
-  width: 100%;
-  background-color: #ede;
+}
+
+/* Actual footer */
+
+.silverbullet-footer-wrapper {
   position: relative;
+  width: 100%;
+  height: 50px;
+  background-color: #ede;
 }
 
 /* Export button... */
+
 .silverbullet-export-wrapper {
-  height: 100%;
-  width: 100%;
-  background-color: #dedede;
-  text-align: center;
   clear: both;
   position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background-color: #dedede;
 }
+
 .silverbullet-export-button {
-  margin: 0;
-  height: 30px;
-  width: 100px;
   position: relative;
-  background-color: #444;
-  color: white;
   top: 50%;
   left: 50%;
+  width: 100px;
+  height: 30px;
+  margin: 0;
   margin-right: -50%;
   cursor: pointer;
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
+  color: #fff;
+  background-color: #444;
   transform: translate(-50%, -50%);
 }
-.silverbullet-export-button p {
+
+.silverbullet-export--p {
   position: relative;
   top: 50%;
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  -moz-transform: translateY(-50%);
-  -o-transform: translateY(-50%);
   transform: translateY(-50%);
 }
+
 .silverbullet-export-button:hover {
   background-color: #888;
 }
+
 .silverbullet-export-button:active {
   color: #f00;
 }

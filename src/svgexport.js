@@ -8,9 +8,9 @@
 // Called from downloadSvg to assemble a timestamed svg filename
 function makeSvgFilename() {
   const myDate = new Date();
-  let timeStamp = `${myDate.getMonth()}-${myDate.getDate()}-`;
-  timeStamp += `${myDate.getHours()}-${myDate.getMinutes()}`;
-  return `svg-${timeStamp}.svg`;
+  let timeStamp = `${ myDate.getMonth() }-${ myDate.getDate() }-`;
+  timeStamp += `${ myDate.getHours() }-${ myDate.getMinutes() }`;
+  return `svg-${ timeStamp }.svg`;
 }
 // MAKE SVG FILENAME ends
 
@@ -20,7 +20,7 @@ function makeSvgFilename() {
 function downloadSvg(text) {
   const aElement = document.createElement('a');
   const fileName = makeSvgFilename();
-  aElement.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`);
+  aElement.setAttribute('href', `data:text/plain;charset=utf-8,${ encodeURIComponent(text) }`);
   aElement.setAttribute('download', fileName);
   document.body.appendChild(aElement);
   if (document.createEvent) {
@@ -49,7 +49,7 @@ function getChartStyles() {
         if (elems.length > 0) {
           const selText = rule.selectorText;
           if (selText.includes('d3')) {
-            used += `${selText} { ${rule.style.cssText} }\n`;
+            used += `${ selText } { ${ rule.style.cssText } }\n`;
           }
         }
       }
