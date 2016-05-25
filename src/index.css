@@ -1,4 +1,5 @@
 @import '@economist/component-silver-editor';
+@import '@economist/component-silver-chartwrapper';
 
 /* During development, OUTERMOST wrapper has fixed depth */
 

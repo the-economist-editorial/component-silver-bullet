@@ -2,7 +2,7 @@
 import React from 'react';
 // NOTE: dependency ChartWrapper amputated for now
 // Chartwrapper
-// import SilverChartWrapper from '@economist/component-silver-chartwrapper';
+import SilverChartWrapper from '@economist/component-silver-chartwrapper';
 // Editor
 import SilverEditor from '@economist/component-silver-editor';
 // Operational preferences:
@@ -51,6 +51,7 @@ export default class SilverBullet extends React.Component {
     };
     this.handleConfigFromEditor = this.handleConfigFromEditor.bind(this);
     this.handleSvgExportClick = this.handleSvgExportClick.bind(this);
+    this.onReturnedSvg = this.onReturnedSvg.bind(this);
   }
   // CONSTRUCTOR ends
 
@@ -79,7 +80,7 @@ export default class SilverBullet extends React.Component {
   // Calls external function in svgexport.es6 module to process and download SVG.
   // Sets the state flag getSVG off again
   // Arg is the SVG node's content, passed up from the style component
-  catchReturnedSvg(svgString) {
+  onReturnedSvg(svgString) {
     // Config object
     const svgConfig = SilverBulletConfig.svg;
     // External function
@@ -103,8 +104,7 @@ export default class SilverBullet extends React.Component {
     let cJsx = <div>Nothing</div>;
     // Thereafter, construct context-specific child
     if (this.state.canRenderChart) {
-      console.log('Call to ChartWrapper disabled in getChartWrapper, line 101');
-      // cJsx = <SilverChartWrapper config={config} getSvg={getSvg} passSvg={this.catchReturnedSvg.bind(this)}/>;
+      cJsx = <SilverChartWrapper config={config} getSvg={getSvg} passSvg={this.onReturnedSvg} />;
     }
     /* eslint-enable */
     return cJsx;
